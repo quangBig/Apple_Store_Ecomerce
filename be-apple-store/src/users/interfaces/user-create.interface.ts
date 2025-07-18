@@ -1,8 +1,8 @@
 export interface UserCreateData {
-    LastName: string;
-    Name: string;
-    Email: string;
-    PhoneNumber: string;
-    Password: string;
-    ConfirmPassword: string;
+    lastname: string;
+    mame: string;
+    email: string;
+    phonenumber: string;
+    password: string;
+    confirmpassword: string;
 }
