@@ -4,24 +4,24 @@ import { IsPasswordMatchingConstraint } from '../decorators/is-password-matching
 export class CreateUserDto {
     @IsNotEmpty()
     @IsString()
-    LastName: string;
+    lastname: string;
 
     @IsNotEmpty()
     @IsString()
-    Name: string;
+    name: string;
 
     @IsEmail()
-    Email: string;
+    email: string;
 
     @IsNotEmpty()
     @Matches(/^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$/)
-    PhoneNumber: string;
+    phonenumber: string;
 
     @IsNotEmpty()
     @MinLength(8)
-    Password: string;
+    password: string;
 
     @IsNotEmpty()
-    @Validate(IsPasswordMatchingConstraint)
-    ConfirmPassword: string;
+    confirmpassword: string;
 }
+

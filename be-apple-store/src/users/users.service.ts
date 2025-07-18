@@ -4,48 +4,50 @@ import { Model } from 'mongoose';
 import * as bcrypt from 'bcryptjs';
 import { User } from './schemas/users.schema';
 
-
-
 @Injectable()
 export class UsersService {
     constructor(@InjectModel(User.name) private userModel: Model<User>) { }
 
     async create(userData: {
-        LastName: string;
-        Name: string;
-        Email: string;
-        PhoneNumber: string;
-        Password: string;
-        ConfirmPassword: string;
+        lastname: string;
+        name: string;
+        email: string;
+        phonenumber: string;
+        password: string;
+        confirmpassword: string;
     }): Promise<User> {
         // Kiểm tra email tồn tại
-        const existingEmail = await this.userModel.findOne({ Email: userData.Email }).exec();
+        const existingEmail = await this.userModel.findOne({ email: userData.email }).exec();
         if (existingEmail) {
             throw new ConflictException('Email đã tồn tại');
         }
 
         // Kiểm tra số điện thoại tồn tại
-        const existingPhone = await this.userModel.findOne({ PhoneNumber: userData.PhoneNumber }).exec();
+        const existingPhone = await this.userModel.findOne({ phonenumber: userData.phonenumber }).exec();
         if (existingPhone) {
             throw new ConflictException('Số điện thoại đã tồn tại');
         }
 
         // Kiểm tra pass và confirmpass
-        if (userData.Password !== userData.ConfirmPassword) {
+        if (userData.password !== userData.confirmpassword) {
             throw new ConflictException('Sai mật khẩu hoặc nhập lại mật khẩu');
         }
 
         // Hash password
-        const hashedPassword = await bcrypt.hash(userData.Password, 10);
+        const hashedPassword = await bcrypt.hash(userData.password, 10);
 
         const newUser = new this.userModel({
-            LastName: userData.LastName,
-            Name: userData.Name,
-            Email: userData.Email,
-            PhoneNumber: userData.PhoneNumber,
-            Password: hashedPassword
+            lastname: userData.lastname,
+            name: userData.name,
+            email: userData.email,
+            phonenumber: userData.phonenumber,
+            password: hashedPassword
         });
 
         return newUser.save();
+    }
+
+    async findByEmail(email: string): Promise<User | null> {
+        return this.userModel.findOne({ email }).exec();
     }
 }

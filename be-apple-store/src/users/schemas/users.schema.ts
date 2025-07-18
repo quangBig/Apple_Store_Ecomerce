@@ -5,20 +5,20 @@ import { Exclude } from 'class-transformer';
 @Schema({ timestamps: true })
 export class User extends Document {
     @Prop({ required: true, trim: true })
-    LastName: string;
+    lastname: string;
 
     @Prop({ required: true, trim: true })
-    Name: string;
+    name: string;
 
     @Prop({ required: true, unique: true, trim: true, lowercase: true })
-    Email: string;
+    email: string;
 
     @Prop({ required: true, unique: true, trim: true })
-    PhoneNumber: string;
+    phonenumber: string;
 
     @Prop({ required: true })
     @Exclude() // Ẩn password khi trả về JSON
-    Password: string;
+    password: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
