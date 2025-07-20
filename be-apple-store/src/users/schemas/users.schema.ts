@@ -19,6 +19,8 @@ export class User extends Document {
     @Prop({ required: true })
     @Exclude() // Ẩn password khi trả về JSON
     password: string;
+    @Prop({ required: true, default: 'user' })
+    role: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

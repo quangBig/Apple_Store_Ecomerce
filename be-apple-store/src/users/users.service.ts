@@ -15,6 +15,7 @@ export class UsersService {
         phonenumber: string;
         password: string;
         confirmpassword: string;
+        role?: string;
     }): Promise<User> {
         // Kiểm tra email tồn tại
         const existingEmail = await this.userModel.findOne({ email: userData.email }).exec();
@@ -41,7 +42,8 @@ export class UsersService {
             name: userData.name,
             email: userData.email,
             phonenumber: userData.phonenumber,
-            password: hashedPassword
+            password: hashedPassword,
+            role: userData.role || 'user'
         });
 
         return newUser.save();
