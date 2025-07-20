@@ -3,6 +3,8 @@ import { AuthService } from './auth.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { LoginDto } from './dto/login-user.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { RolesGuard } from './guards/roles.guard';
+import { Role } from './decorators/roles.decorator';
 
 
 @Controller('auth')
@@ -24,5 +26,12 @@ export class AuthController {
     @Get('profile')
     getProfile(@Request() req) {
         return req.user;
+    }
+
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Role('admin')
+    @Get('admin-only')
+    getAdminData() {
+        return 'Chỉ admin mới thấy được!';
     }
 }
