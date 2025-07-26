@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import AOS from "aos";
 import "aos/dist/aos.css";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
+import Header from "../../components/layout/Header";
+import Footer from "../../components/layout/Footer";
+import { useAuthStore } from "../../stores/useAuthStore";
+import { ToastContainer, toast } from 'react-toastify';
 
 const LoginPage = () => {
     const [formData, setFormData] = useState({
@@ -13,6 +15,10 @@ const LoginPage = () => {
     });
 
     const [showPassword, setShowPassword] = useState(false);
+
+    const login = useAuthStore((state) => state.login);
+    const loading = useAuthStore((state) => state.loading);
+    const navigate = useNavigate();
 
     // Initialize AOS
     useEffect(() => {
@@ -32,11 +38,14 @@ const LoginPage = () => {
         }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        // Xử lý đăng nhập
-        console.log("Login data:", formData);
-        alert("Đăng nhập thành công!");
+        try {
+            await login(formData.email, formData.password);
+            navigate("/");
+        } catch (error) {
+            toast.error("Đăng nhập thất bại");
+        }
     };
 
     const handleSocialLogin = (provider) => {
@@ -185,8 +194,9 @@ const LoginPage = () => {
                             <button
                                 type="submit"
                                 className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4 px-6 rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-300 font-semibold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                                disabled={loading}
                             >
-                                Đăng nhập
+                                {loading ? "Đang đăng nhập..." : "Đăng nhập"}
                             </button>
                         </form>
 

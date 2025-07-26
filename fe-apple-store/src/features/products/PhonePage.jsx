@@ -1,11 +1,12 @@
 import React from "react";
-import DeviceShowcase from "../components/DeviceShowcase";
-import ProductList from "../components/ProductList";
-import Footer from "../components/Footer";
-import WhyAppleSection from "../components/WhyAppleSection";
-import ProductDetailComparison from '../components/ProductDetailComparison';
-import FeatureCarousel from '../components/FeatureCarousel';
+
 import { useParams } from "react-router-dom";
+import DeviceShowcase from "../../components/sections/DeviceShowcase";
+import FeatureCarousel from "../../components/common/FeatureCarousel";
+import ProductList from "../../components/product/ProductList";
+import WhyAppleSection from "../../components/common/WhyAppleSection";
+import ProductDetailComparison from "../../components/product/ProductDetailComparison";
+import Footer from "../../components/layout/Footer";
 
 const iphoneModels = {
     "15pro": {

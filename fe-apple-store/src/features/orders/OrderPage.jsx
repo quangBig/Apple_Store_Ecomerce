@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import OrderSidebar from '../components/orders/OrderSidebar';
-import OrderTabs from '../components/orders/OrderTabs';
-import OrderSearchBar from '../components/orders/OrderSearchBar';
-import OrderList from '../components/orders/OrderList';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
+import OrderSidebar from './components/OrderSidebar';
+import OrderTabs from './components/OrderTabs';
+import OrderSearchBar from './components/OrderSearchBar';
+import OrderList from './components/OrderList';
+import Header from "../../components/layout/Header";
+import Footer from "../../components/layout/Footer";
 
 const MOCK_ORDERS = [
     {

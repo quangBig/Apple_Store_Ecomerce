@@ -1,5 +1,5 @@
 import React from "react";
-import "../index.css";
+import "../../index.css";
 
 /**
  * ProductGrid: Bọc các ProductCard với hiệu ứng filter card đẹp như hình mẫu

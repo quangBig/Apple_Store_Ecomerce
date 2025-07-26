@@ -14,7 +14,7 @@ export class AuthController {
     @Post('register')
     @UsePipes(new ValidationPipe())
     async register(@Body() createUserDto: CreateUserDto) {
-        return this.authService.register(createUserDto); // Truyền nguyên bản DTO
+        return this.authService.register(createUserDto);
     }
 
     @Post('login')

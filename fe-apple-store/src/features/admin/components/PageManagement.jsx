@@ -31,11 +31,11 @@ const PageManagement = () => {
                         >
                             <div className="flex items-center justify-between mb-3">
                                 <div className={`w-12 h-12 rounded-full flex items-center justify-center text-2xl ${category.color === 'blue' ? 'bg-blue-100 text-blue-600' :
-                                        category.color === 'purple' ? 'bg-purple-100 text-purple-600' :
-                                            category.color === 'green' ? 'bg-green-100 text-green-600' :
-                                                category.color === 'red' ? 'bg-red-100 text-red-600' :
-                                                    category.color === 'yellow' ? 'bg-yellow-100 text-yellow-600' :
-                                                        'bg-gray-100 text-gray-600'
+                                    category.color === 'purple' ? 'bg-purple-100 text-purple-600' :
+                                        category.color === 'green' ? 'bg-green-100 text-green-600' :
+                                            category.color === 'red' ? 'bg-red-100 text-red-600' :
+                                                category.color === 'yellow' ? 'bg-yellow-100 text-yellow-600' :
+                                                    'bg-gray-100 text-gray-600'
                                     }`}>
                                     {category.icon}
                                 </div>

@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import AOS from "aos";
 import "aos/dist/aos.css";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
+import Header from "../../components/layout/Header";
+import Footer from "../../components/layout/Footer";
+import { useAuthStore } from "../../stores/useAuthStore";
 
 const CartPage = () => {
     const [cartItems, setCartItems] = useState([
@@ -35,6 +36,9 @@ const CartPage = () => {
             category: "iPad"
         }
     ]);
+
+    const user = useAuthStore((state) => state.user);
+    const navigate = useNavigate();
 
     // Initialize AOS
     useEffect(() => {
@@ -77,6 +81,14 @@ const CartPage = () => {
 
     const formatPrice = (price) => {
         return new Intl.NumberFormat('vi-VN').format(price);
+    };
+
+    const handleCheckout = () => {
+        if (!user) {
+            navigate("/login");
+        } else {
+            navigate("/checkout");
+        }
     };
 
     if (cartItems.length === 0) {
@@ -241,10 +253,12 @@ const CartPage = () => {
                             </div>
 
                             <div className="mt-6 space-y-3">
-                                <Link to="/checkout">
-                                    <button className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors duration-200 font-medium">
-                                        Tiến hành thanh toán
-                                    </button></Link>
+                                <button
+                                    onClick={handleCheckout}
+                                    className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors duration-200 font-medium"
+                                >
+                                    Tiến hành thanh toán
+                                </button>
                                 <Link
                                     to="/"
                                     className="block w-full text-center bg-gray-100 text-gray-700 py-3 px-6 rounded-lg hover:bg-gray-200 transition-colors duration-200 font-medium"

@@ -1,12 +1,12 @@
 import React from "react";
-import HeroSection from "../components/HeroSection";
-import ProductSection from "../components/ProductSection";
-import Header from "../components/Header";
-import ContactSection from "../components/ContactSection";
-import AboutSection from "../components/AboutSection";
-import Footer from "../components/Footer";
-import ChatBot from "../components/ChatBot";
+import HeroSection from "../components/sections/HeroSection";
 import { Link } from 'react-router-dom';
+import Header from "../components/layout/Header";
+import ProductSection from "../components/product/ProductSection";
+import ContactSection from "../components/sections/ContactSection";
+import AboutSection from "../components/sections/AboutSection";
+import Footer from "../components/layout/Footer";
+import ChatBot from "../components/common/ChatBot";
 
 const products = [
     {
