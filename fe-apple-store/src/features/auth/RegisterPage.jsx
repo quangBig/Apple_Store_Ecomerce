@@ -59,17 +59,24 @@ const RegisterPage = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
+        const phoneRegex = /^(\+84|0)[3|5|7|8|9][0-9]{8}$/;
+        if (!formData.phone) {
+            toast.error("Vui lòng nhập số điện thoại!");
+            return;
+        }
+        if (!phoneRegex.test(formData.phone)) {
+            toast.error("Số điện thoại không hợp lệ! Vui lòng nhập số điện thoại Việt Nam (10-11 số).");
+            return;
+        }
         if (formData.password !== formData.confirmPassword) {
             toast.warning("Mật khẩu xác nhận không khớp!");
             return;
         }
-        if (formData.phone)
 
-            if (!formData.agreeToTerms) {
-                toast.warning("Vui lòng đồng ý với điều khoản sử dụng!");
-                return;
-            }
+        if (!formData.agreeToTerms) {
+            toast.warning("Vui lòng đồng ý với điều khoản sử dụng!");
+            return;
+        }
 
         const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
 

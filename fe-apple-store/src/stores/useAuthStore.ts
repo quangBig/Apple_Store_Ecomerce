@@ -64,16 +64,22 @@ export const useAuthStore = create<AuthState, [['zustand/persist', AuthState]]>(
                 try {
                     await axios.post("/auth/register", data);
                     set({ loading: false });
-                    toast.success("Đăng ký thành công")
+                    toast.success("Đăng ký thành công");
                 } catch (error: any) {
                     set({ loading: false });
+
+                    const msg = error?.response?.data?.message;
+                    if (Array.isArray(msg)) {
+                        toast.error(msg.join(", "));
+                    } else {
+                        toast.error(msg || "Lỗi đăng ký");
+                    }
+
                     throw error;
                 }
             },
             logout: () => {
                 set({ user: null, token: null });
-
-
             },
             checkAuth: async () => {
                 set({ checkingAuth: true });
