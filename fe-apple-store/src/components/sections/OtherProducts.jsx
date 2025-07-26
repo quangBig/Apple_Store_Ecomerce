@@ -1,6 +1,6 @@
 import React from "react";
-import ProductCard from "./ProductCard";
-import ProductGrid from "./ProductGrid";
+import ProductCard from "../product/ProductCard";
+import ProductGrid from "../product/ProductGrid";
 
 // Mock data sản phẩm tương tự
 const products = [

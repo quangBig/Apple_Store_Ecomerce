@@ -2,9 +2,10 @@ import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import AOS from "aos";
 import "aos/dist/aos.css";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
-import OtherProducts from "../components/OtherProducts";
+
+import Header from "../../components/layout/Header";
+import Footer from "../../components/layout/Footer";
+import OtherProducts from "../../components/sections/OtherProducts";
 
 // Mock data - trong thực tế sẽ lấy từ API
 const productData = {

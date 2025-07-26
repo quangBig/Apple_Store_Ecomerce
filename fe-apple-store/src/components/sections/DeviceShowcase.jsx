@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import Header from "./Header";
+import Header from "../layout/Header";
+
 
 const DeviceShowcase = ({ products, title, desc }) => {
     const [selected, setSelected] = useState(0);
@@ -69,7 +70,7 @@ const DeviceShowcase = ({ products, title, desc }) => {
                         <div
                             data-aos="zoom-in"
                             data-aos-delay="0"
-                            className={`absolute mt-8 sm:mt-12 md:mt-16 -translate-x-1/2 flex flex-col items-center transition-all duration-500 ${animating ? "translate-x-full opacity-0" : "translate-x-0 opacity-100"
+                            className={`absolute mt-8 sm:mt-12 md:mt-32 -translate-x-1/2 flex flex-col items-center transition-all duration-500 ${animating ? "translate-x-full opacity-0" : "translate-x-0 opacity-100"
                                 }`}
                             style={{
                                 zIndex: 2,

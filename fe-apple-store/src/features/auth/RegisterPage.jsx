@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import AOS from "aos";
 import "aos/dist/aos.css";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
+import Header from "../../components/layout/Header";
+import Footer from "../../components/layout/Footer";
+import { useAuthStore } from "../../stores/useAuthStore";
+import { toast } from "react-toastify";
+
 
 const RegisterPage = () => {
     const [formData, setFormData] = useState({
@@ -20,6 +23,10 @@ const RegisterPage = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [passwordStrength, setPasswordStrength] = useState(0);
+
+    const register = useAuthStore((state) => state.register);
+    const loading = useAuthStore((state) => state.loading);
+    const navigate = useNavigate();
 
     // Initialize AOS
     useEffect(() => {
@@ -50,41 +57,60 @@ const RegisterPage = () => {
         }
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
         if (formData.password !== formData.confirmPassword) {
-            alert("Mật khẩu xác nhận không khớp!");
+            toast.warning("Mật khẩu xác nhận không khớp!");
+            return;
+        }
+        if (formData.phone)
+
+            if (!formData.agreeToTerms) {
+                toast.warning("Vui lòng đồng ý với điều khoản sử dụng!");
+                return;
+            }
+
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
+
+        if (!passwordRegex.test(formData.password)) {
+            toast.error("Mật khẩu phải có ít nhất 8 ký tự, gồm chữ hoa, chữ thường, số và ký tự đặc biệt!");
             return;
         }
 
-        if (!formData.agreeToTerms) {
-            alert("Vui lòng đồng ý với điều khoản sử dụng!");
-            return;
-        }
+        try {
+            await register({
+                lastname: formData.firstName,
+                name: formData.lastName,
+                email: formData.email,
+                phonenumber: formData.phone,
+                password: formData.password,
+                confirmpassword: formData.confirmPassword
+            });
 
-        // Xử lý đăng ký
-        console.log("Register data:", formData);
-        alert("Đăng ký thành công! Vui lòng kiểm tra email để xác nhận tài khoản.");
+            navigate("/login");
+        } catch (error) {
+            toast.error("Đăng ký thất bại")
+        }
     };
 
     const handleSocialRegister = (provider) => {
         // Xử lý đăng ký bằng mạng xã hội
         console.log(`Register with ${provider}`);
-        alert(`Đang đăng ký bằng ${provider}...`);
+        toast.success(`Đang đăng ký bằng ${provider}...`);
     };
 
     const getPasswordStrengthColor = () => {
-        if (passwordStrength <= 2) return "bg-red-500";
-        if (passwordStrength <= 3) return "bg-yellow-500";
-        if (passwordStrength <= 4) return "bg-blue-500";
+        if (passwordStrength <= 9) return "bg-red-500";
+        if (passwordStrength <= 12) return "bg-yellow-500";
+        if (passwordStrength <= 15) return "bg-blue-500";
         return "bg-green-500";
     };
 
     const getPasswordStrengthText = () => {
-        if (passwordStrength <= 2) return "Yếu";
-        if (passwordStrength <= 3) return "Trung bình";
-        if (passwordStrength <= 4) return "Khá";
+        if (passwordStrength <= 9) return "Yếu";
+        if (passwordStrength <= 12) return "Trung bình";
+        if (passwordStrength <= 15) return "Khá";
         return "Mạnh";
     };
 
@@ -346,8 +372,9 @@ const RegisterPage = () => {
                         <button
                             type="submit"
                             className="w-full bg-gradient-to-r from-green-600 to-blue-600 text-white py-4 px-6 rounded-xl hover:from-green-700 hover:to-blue-700 transition-all duration-300 font-semibold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                            disabled={loading}
                         >
-                            Đăng ký
+                            {loading ? "Đang đăng ký..." : "Đăng ký"}
                         </button>
                     </form>
 

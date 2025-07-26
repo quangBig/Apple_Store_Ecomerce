@@ -1,10 +1,11 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import LocalMallIcon from '@mui/icons-material/LocalMall';
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
+import { useAuthStore } from "../../stores/useAuthStore";
 
 const menu = [
     {
@@ -62,6 +63,10 @@ const Header = ({ logoColor = "#000" }) => {
     const [showUserMenu, setShowUserMenu] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [mobileSubMenu, setMobileSubMenu] = useState(null);
+
+    const user = useAuthStore((state) => state.user);
+    const logout = useAuthStore((state) => state.logout);
+    const navigate = useNavigate();
 
     return (
         <header className="w-full flex justify-between items-center px-4 sm:px-6 lg:px-10 py-4 lg:py-6 backdrop-blur-md backdrop-saturate-150 shadow-md z-50 relative">
@@ -219,38 +224,40 @@ const Header = ({ logoColor = "#000" }) => {
                     {showUserMenu && (
                         <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg py-2 z-50 border border-gray-100 animate-fadein">
                             <div className="px-4 py-3 border-b border-gray-100">
-                                <p className="text-sm text-gray-500">Tài khoản</p>
+                                {user ? (
+                                    <>
+                                        <p className="text-sm text-gray-500">Xin chào, <span className="font-semibold text-gray-800">{user.name}</span></p>
+                                        <p className="text-xs text-gray-400">{user.email}</p>
+                                    </>
+                                ) : (
+                                    <p className="text-sm text-gray-500">Tài khoản</p>
+                                )}
                             </div>
-                            <Link
-                                to="/login"
-                                className="block px-4 py-3 text-gray-700 hover:bg-gray-50 hover:text-blue-500 transition-colors duration-200 flex items-center"
-                                onClick={() => setShowUserMenu(false)}
-                            >
-                                <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
-                                </svg>
-                                Đăng nhập
-                            </Link>
-                            <Link
-                                to="/register"
-                                className="block px-4 py-3 text-gray-700 hover:bg-gray-50 hover:text-blue-500 transition-colors duration-200 flex items-center"
-                                onClick={() => setShowUserMenu(false)}
-                            >
-                                <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
-                                </svg>
-                                Đăng ký
-                            </Link>
-                            <Link
-                                to="/orders"
-                                className="block px-4 py-3 text-gray-700 hover:bg-gray-50 hover:text-blue-500 transition-colors duration-200 flex items-center"
-                                onClick={() => setShowUserMenu(false)}
-                            >
-                                <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
-                                </svg>
-                                Đơn mua
-                            </Link>
+                            {!user && (
+                                <>
+                                    <Link to="/login" className="block px-4 py-3 text-gray-700 hover:bg-gray-50 hover:text-blue-500 transition-colors duration-200 flex items-center" onClick={() => setShowUserMenu(false)}>
+                                        <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" /></svg>Đăng nhập
+                                    </Link>
+                                    <Link to="/register" className="block px-4 py-3 text-gray-700 hover:bg-gray-50 hover:text-blue-500 transition-colors duration-200 flex items-center" onClick={() => setShowUserMenu(false)}>
+                                        <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" /></svg>Đăng ký
+                                    </Link>
+                                </>
+                            )}
+                            {user && (
+                                <>
+                                    <Link to="/orders" className="block px-4 py-3 text-gray-700 hover:bg-gray-50 hover:text-blue-500 transition-colors duration-200 flex items-center" onClick={() => setShowUserMenu(false)}>
+                                        <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" /></svg>Đơn mua
+                                    </Link>
+                                    {user.role === "admin" && (
+                                        <Link to="/admin" className="block px-4 py-3 text-gray-700 hover:bg-gray-50 hover:text-blue-500 transition-colors duration-200 flex items-center" onClick={() => setShowUserMenu(false)}>
+                                            <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7h18M3 12h18M3 17h18" /></svg>Quản lý cửa hàng
+                                        </Link>
+                                    )}
+                                    <button onClick={() => { logout(); setShowUserMenu(false); navigate("/"); }} className="w-full text-left px-4 py-3 text-gray-700 hover:bg-gray-50 hover:text-red-500 transition-colors duration-200 flex items-center">
+                                        <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" /></svg>Đăng xuất
+                                    </button>
+                                </>
+                            )}
                         </div>
                     )}
                 </div>

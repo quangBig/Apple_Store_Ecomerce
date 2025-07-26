@@ -1,7 +1,8 @@
-import AccountInfo from '../components/account/AccountInfo';
-import OrderSidebar from '../components/orders/OrderSidebar';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
+import AccountInfo from './components/AccountInfo';
+import OrderSidebar from '../orders/components/OrderSidebar';
+import Header from '../../components/layout/Header';
+import Footer from '../../components/layout/Footer';
+
 
 const MOCK_USER = {
     avatar: '/avatar.png',

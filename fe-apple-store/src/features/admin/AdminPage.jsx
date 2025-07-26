@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
 import AOS from "aos";
 import "aos/dist/aos.css";
-import Header from "../components/Header";
-
-import Sidebar from "../components/admin/Sidebar";
-import Dashboard from "../components/admin/Dashboard";
-import ProductManagement from "../components/admin/ProductManagement";
-import PageManagement from "../components/admin/PageManagement";
+import Header from "../../components/layout/Header";
+import Sidebar from "./components/Sidebar";
+import Dashboard from "./components/Dashboard";
+import ProductManagement from "./components/ProductManagement";
+import PageManagement from "./components/PageManagement";
 
 const AdminPage = () => {
     const [activeTab, setActiveTab] = useState("dashboard");

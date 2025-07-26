@@ -1,10 +1,10 @@
 import React from "react";
-import DeviceShowcase from "../components/DeviceShowcase";
-import ProductList from "../components/ProductList";
-import WhyAppleSection from "../components/WhyAppleSection";
-import Footer from "../components/Footer";
-import ProductDetailComparison from '../components/ProductDetailComparison';
-import FeatureCarousel from '../components/FeatureCarousel';
+import DeviceShowcase from "../../components/sections/DeviceShowcase";
+import FeatureCarousel from "../../components/common/FeatureCarousel";
+import ProductList from "../../components/product/ProductList";
+import WhyAppleSection from "../../components/common/WhyAppleSection";
+import ProductDetailComparison from "../../components/product/ProductDetailComparison";
+import Footer from "../../components/layout/Footer";
 import { useParams } from "react-router-dom";
 
 const airpodsModels = {

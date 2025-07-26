@@ -15,8 +15,8 @@ export default function OrderTabs({ current, onChange }) {
                 <button
                     key={tab.value}
                     className={`px-4 py-2 font-medium focus:outline-none transition-colors duration-200 ${current === tab.value
-                            ? 'text-[#ee4d2d] border-b-2 border-[#ee4d2d] bg-white'
-                            : 'text-gray-700'
+                        ? 'text-[#ee4d2d] border-b-2 border-[#ee4d2d] bg-white'
+                        : 'text-gray-700'
                         }`}
                     onClick={() => onChange(tab.value)}
                 >
