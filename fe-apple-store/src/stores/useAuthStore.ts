@@ -80,6 +80,7 @@ export const useAuthStore = create<AuthState, [['zustand/persist', AuthState]]>(
             },
             logout: () => {
                 set({ user: null, token: null });
+                toast.success("Đăng xuất thành công");
             },
             checkAuth: async () => {
                 set({ checkingAuth: true });
