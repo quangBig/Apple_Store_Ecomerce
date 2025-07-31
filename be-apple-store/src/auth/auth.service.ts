@@ -43,4 +43,28 @@ export class AuthService {
         }
         return null;
     }
+    async validateGoogleUser(profile: {
+        email: string;
+        firstName: string;
+        lastName: string;
+        googleId: string;
+    }) {
+        let user = await this.usersService.findByEmail(profile.email);
+
+        if (!user) {
+            user = await this.usersService.create({
+                name: `${profile.firstName} ${profile.lastName}`,
+                lastname: profile.lastName || '',
+                email: profile.email,
+                phonenumber: '0000000000',
+                password: 'google-oauth-no-password',
+                confirmpassword: 'google-oauth-no-password',
+                googleId: profile.googleId,
+                role: 'user',
+            });
+        }
+
+        return user;
+    }
+
 }

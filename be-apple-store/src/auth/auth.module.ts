@@ -6,10 +6,13 @@ import { UsersModule } from '../users/users.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './jwt.strategy';
+import { PassportModule } from '@nestjs/passport';
+import { GoogleStrategy } from './strategies/google-strategy';
 
 @Module({
     imports: [
         UsersModule,
+        PassportModule,
         JwtModule.registerAsync({
             imports: [ConfigModule],
             inject: [ConfigService],
@@ -20,6 +23,6 @@ import { JwtStrategy } from './jwt.strategy';
         }),
     ], // Import UsersModule để sử dụng UsersService
     controllers: [AuthController],
-    providers: [AuthService, JwtStrategy],
+    providers: [AuthService, JwtStrategy, GoogleStrategy],
 })
 export class AuthModule { }

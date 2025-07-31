@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty, IsString, MinLength, Matches, Validate } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString, MinLength, Matches, Validate, IsOptional } from 'class-validator';
 import { IsPasswordMatchingConstraint } from '../decorators/is-password-matching.decorator';
 
 export class CreateUserDto {
@@ -23,5 +23,9 @@ export class CreateUserDto {
 
     @IsNotEmpty()
     confirmpassword: string;
+
+    @IsOptional()
+    @IsString()
+    googleId?: string;
 }
 
