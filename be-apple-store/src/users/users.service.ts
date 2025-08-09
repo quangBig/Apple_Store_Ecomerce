@@ -1,4 +1,4 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcryptjs';
@@ -9,7 +9,6 @@ export class UsersService {
     constructor(@InjectModel(User.name) private userModel: Model<User>) { }
 
     async create(userData: {
-        lastname: string;
         name: string;
         email: string;
         phonenumber: string;
@@ -17,6 +16,7 @@ export class UsersService {
         confirmpassword: string;
         role?: string;
         googleId?: string;
+        facebookId?: string;
     }): Promise<User> {
         // Kiểm tra email tồn tại
         const existingEmail = await this.userModel.findOne({ email: userData.email }).exec();
@@ -39,7 +39,6 @@ export class UsersService {
         const hashedPassword = await bcrypt.hash(userData.password, 10);
 
         const newUser = new this.userModel({
-            lastname: userData.lastname,
             name: userData.name,
             email: userData.email,
             phonenumber: userData.phonenumber,
@@ -52,5 +51,21 @@ export class UsersService {
 
     async findByEmail(email: string): Promise<User | null> {
         return this.userModel.findOne({ email }).exec();
+    }
+
+    async findOne(filter: any): Promise<User | null> {
+        return this.userModel.findOne(filter).exec();
+    }
+
+    async findByPhone(phone: string): Promise<User | null> {
+        return this.userModel.findOne({ phoneNumber: phone }).exec();
+    }
+
+    async updateUser(userId: string, data: Partial<User>): Promise<User> {
+        const updatedUser = await this.userModel.findByIdAndUpdate(userId, data, { new: true }).exec();
+        if (!updatedUser) {
+            throw new NotFoundException('User not found');
+        }
+        return updatedUser;
     }
 }

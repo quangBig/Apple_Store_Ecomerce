@@ -1,6 +1,5 @@
 export interface UserCreateData {
-    lastname: string;
-    mame: string;
+    name: string;
     email: string;
     phonenumber: string;
     password: string;
