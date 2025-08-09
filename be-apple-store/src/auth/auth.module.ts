@@ -8,6 +8,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './jwt.strategy';
 import { PassportModule } from '@nestjs/passport';
 import { GoogleStrategy } from './strategies/google-strategy';
+import { FacebookStrategy } from './strategies/facebook-strategy';
 
 @Module({
     imports: [
@@ -23,6 +24,6 @@ import { GoogleStrategy } from './strategies/google-strategy';
         }),
     ], // Import UsersModule để sử dụng UsersService
     controllers: [AuthController],
-    providers: [AuthService, JwtStrategy, GoogleStrategy],
+    providers: [AuthService, JwtStrategy, GoogleStrategy, FacebookStrategy],
 })
 export class AuthModule { }

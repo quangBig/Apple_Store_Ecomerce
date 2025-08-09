@@ -29,10 +29,10 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
 
         const user = await this.authService.validateGoogleUser({
             email: emails[0].value,
-            firstName: name.givenName,
-            lastName: name.familyName,
+            name: name.givenName,
             googleId: id,
         });
+        console.log(user, "user");
 
         return user;
     }

@@ -4,8 +4,6 @@ import { Exclude } from 'class-transformer';
 
 @Schema({ timestamps: true })
 export class User extends Document {
-    @Prop({ required: true, trim: true })
-    lastname: string;
 
     @Prop({ required: true, trim: true })
     name: string;
@@ -13,7 +11,7 @@ export class User extends Document {
     @Prop({ required: true, unique: true, trim: true, lowercase: true })
     email: string;
 
-    @Prop({ required: true, unique: true, trim: true })
+    @Prop({ required: false, trim: true })
     phonenumber: string;
 
     @Prop({ required: true })

@@ -1,9 +1,10 @@
-import { BadRequestException, Injectable, UnauthorizedException, UseGuards } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import { LoginDto } from './dto/login-user.dto';
+import { log } from 'console';
 
 
 
@@ -45,26 +46,54 @@ export class AuthService {
     }
     async validateGoogleUser(profile: {
         email: string;
-        firstName: string;
-        lastName: string;
+        name: string;
         googleId: string;
     }) {
         let user = await this.usersService.findByEmail(profile.email);
 
         if (!user) {
             user = await this.usersService.create({
-                name: `${profile.firstName} ${profile.lastName}`,
-                lastname: profile.lastName || '',
+                name: `${profile.name}`,
                 email: profile.email,
-                phonenumber: '0000000000',
+                phonenumber: '',
                 password: 'google-oauth-no-password',
                 confirmpassword: 'google-oauth-no-password',
                 googleId: profile.googleId,
                 role: 'user',
             });
         }
+        console.log(profile, "profile");
+        return user.toObject();
+    }
 
+
+    async validateOAuthLogin(
+        profile: {
+            email: string,
+            name: string,
+            facebookId: string,
+        }) {
+        let user = await this.usersService.findByEmail(profile.email);
+        if (!user) {
+            user = await this.usersService.create({
+                name: `${profile.name}`,
+                email: profile.email,
+                phonenumber: '',
+                password: 'google-oauth-no-password',
+                confirmpassword: 'google-oauth-no-password',
+                facebookId: profile.facebookId,
+                role: 'user',
+            });
+        }
         return user;
     }
 
+    async addPhoneNumber(userId: string, phone: string) {
+        const existingPhone = await this.usersService.findByPhone(phone);
+        if (existingPhone) {
+            throw new ConflictException('Số điện thoại đã tồn tại.');
+        }
+
+        return this.usersService.updateUser(userId, { phonenumber: phone });
+    }
 }
