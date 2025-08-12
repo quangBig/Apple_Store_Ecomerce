@@ -8,7 +8,6 @@ export interface User {
     lastname: string;
     name: string;
     email: string;
-    phonenumber: string;
     role: string;
     createdAt?: string;
     updatedAt?: string;
@@ -28,7 +27,6 @@ interface AuthState {
 interface RegisterData {
     name: string;
     email: string;
-    phonenumber: string;
     password: string;
     confirmpassword: string;
 }

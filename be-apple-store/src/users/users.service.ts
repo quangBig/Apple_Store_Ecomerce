@@ -11,7 +11,6 @@ export class UsersService {
     async create(userData: {
         name: string;
         email: string;
-        phonenumber: string;
         password: string;
         confirmpassword: string;
         role?: string;
@@ -22,12 +21,6 @@ export class UsersService {
         const existingEmail = await this.userModel.findOne({ email: userData.email }).exec();
         if (existingEmail) {
             throw new ConflictException('Email đã tồn tại');
-        }
-
-        // Kiểm tra số điện thoại tồn tại
-        const existingPhone = await this.userModel.findOne({ phonenumber: userData.phonenumber }).exec();
-        if (existingPhone) {
-            throw new ConflictException('Số điện thoại đã tồn tại');
         }
 
         // Kiểm tra pass và confirmpass
@@ -41,7 +34,6 @@ export class UsersService {
         const newUser = new this.userModel({
             name: userData.name,
             email: userData.email,
-            phonenumber: userData.phonenumber,
             password: hashedPassword,
             role: userData.role || 'user'
         });

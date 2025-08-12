@@ -4,5 +4,4 @@ export interface UserCreateData {
     phonenumber: string;
     password: string;
     confirmpassword: string;
-
 }
