@@ -10,10 +10,8 @@ import { toast } from "react-toastify";
 
 const RegisterPage = () => {
     const [formData, setFormData] = useState({
-        firstName: "",
-        lastName: "",
+        name: "",
         email: "",
-        phone: "",
         password: "",
         confirmPassword: "",
         agreeToTerms: false,
@@ -87,8 +85,7 @@ const RegisterPage = () => {
 
         try {
             await register({
-                lastname: formData.firstName,
-                name: formData.lastName,
+                name: formData.name,
                 email: formData.email,
                 phonenumber: formData.phone,
                 password: formData.password,
@@ -193,37 +190,22 @@ const RegisterPage = () => {
 
                     {/* Register Form */}
                     <form onSubmit={handleSubmit} className="space-y-6">
-                        <div className="grid grid-cols-2 gap-4">
-                            <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-3">
-                                    Họ *
-                                </label>
-                                <input
-                                    type="text"
-                                    name="firstName"
-                                    value={formData.firstName}
-                                    onChange={handleInputChange}
-                                    required
-                                    className="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-300 text-lg"
-                                    placeholder="Họ"
-                                />
-                            </div>
 
-                            <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-3">
-                                    Tên *
-                                </label>
-                                <input
-                                    type="text"
-                                    name="lastName"
-                                    value={formData.lastName}
-                                    onChange={handleInputChange}
-                                    required
-                                    className="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-300 text-lg"
-                                    placeholder="Tên"
-                                />
-                            </div>
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-3">
+                                Tên *
+                            </label>
+                            <input
+                                type="text"
+                                name="name"
+                                value={formData.name}
+                                onChange={handleInputChange}
+                                required
+                                className="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-300 text-lg"
+                                placeholder="Tên"
+                            />
                         </div>
+
 
                         <div>
                             <label className="block text-sm font-semibold text-gray-700 mb-3">

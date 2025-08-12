@@ -13,7 +13,6 @@ export class AuthController {
     constructor(private readonly authService: AuthService) { }
 
     @Post('register')
-    @UsePipes(new ValidationPipe())
     async register(@Body() createUserDto: CreateUserDto) {
         return this.authService.register(createUserDto);
     }
@@ -38,8 +37,30 @@ export class AuthController {
     @Get('google/redirect')
     @UseGuards(AuthGuard('google'))
     async googleAuthRedirect(@Request() req) {
-        // xử lý sau khi Google redirect về
-        return this.authService.login(req.user); // trả về access_token
+        const { user, access_token } = req.user;
+        return {
+            access_token,
+            user
+        };
+    }
+    @Get('facebook')
+    @UseGuards(AuthGuard('facebook'))
+    async facebookLogin() {
+        // Passport sẽ redirect tới Facebook
+    }
+
+    @Get('facebook/callback')
+    @UseGuards(AuthGuard('facebook'))
+    async facebookCallback(@Request() req) {
+        return {
+            message: 'Login Facebook thành công',
+            user: req.user,
+        };
+    }
+    @UseGuards(JwtAuthGuard)
+    @Post('facebook/add-phone')
+    async addPhone(@Request() req, @Body() body: { phone: string }) {
+        return this.authService.addPhoneNumber(req.user._id, body.phone);
     }
 
 

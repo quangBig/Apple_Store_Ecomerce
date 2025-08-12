@@ -2,9 +2,6 @@ import { IsEmail, IsNotEmpty, IsString, MinLength, Matches, Validate, IsOptional
 import { IsPasswordMatchingConstraint } from '../decorators/is-password-matching.decorator';
 
 export class CreateUserDto {
-    @IsNotEmpty()
-    @IsString()
-    lastname: string;
 
     @IsNotEmpty()
     @IsString()
@@ -13,9 +10,9 @@ export class CreateUserDto {
     @IsEmail()
     email: string;
 
-    @IsNotEmpty()
-    @Matches(/^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$/)
-    phonenumber: string;
+
+    @IsOptional()
+    phonenumber?: string;
 
     @IsNotEmpty()
     @MinLength(8)
@@ -24,8 +21,4 @@ export class CreateUserDto {
     @IsNotEmpty()
     confirmpassword: string;
 
-    @IsOptional()
-    @IsString()
-    googleId?: string;
 }
-
