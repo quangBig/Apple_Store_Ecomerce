@@ -21,6 +21,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
         });
     }
 
+
     async validate(accessToken: string, refreshToken: string, profile: any, done: any) {
         try {
             console.log('Access Token:', accessToken);
@@ -58,6 +59,22 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
             };
 
             const token = this.jwtService.sign(payload);
+
+    async validate(
+        req: any,
+        accessToken: string,
+        refreshToken: string,
+        profile: any,
+    ): Promise<any> {
+        const { emails, name, id } = profile;
+
+        const user = await this.authService.validateGoogleUser({
+            email: emails[0].value,
+            name: name.givenName,
+            googleId: id,
+        });
+        console.log(user, "user");
+
 
             done(null, {
                 user: user.toObject(),

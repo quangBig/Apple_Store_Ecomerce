@@ -72,17 +72,45 @@ export class AuthService {
 
         if (!user) {
             user = await this.usersService.create({
+
                 name: profile.name,
                 email: profile.email,
-                password: 'google-oauth-no-password',
+
+                name: `${profile.name}`,
+                email: profile.email,
+                phonenumber: '',
+              password: 'google-oauth-no-password',
                 confirmpassword: 'google-oauth-no-password',
                 googleId: profile.googleId,
                 role: 'user',
             });
         }
+        console.log(profile, "profile");
+        return user.toObject();
+    }
 
+
+    async validateOAuthLogin(
+        profile: {
+            email: string,
+            name: string,
+            facebookId: string,
+        }) {
+        let user = await this.usersService.findByEmail(profile.email);
+        if (!user) {
+            user = await this.usersService.create({
+                name: `${profile.name}`,
+                email: profile.email,
+                phonenumber: '',
+                password: 'google-oauth-no-password',
+                confirmpassword: 'google-oauth-no-password',
+                facebookId: profile.facebookId,
+                role: 'user',
+            });
+        }
         return user;
     }
+
 
 
     async validateOAuthLogin(
@@ -103,6 +131,7 @@ export class AuthService {
         return user;
     }
 
+
     async addPhoneNumber(userId: string, phone: string) {
         const existingPhone = await this.usersService.findByPhone(phone);
         if (existingPhone) {
@@ -111,4 +140,8 @@ export class AuthService {
 
         return this.usersService.updateUser(userId, { phonenumber: phone });
     }
+
 }
+
+}
+

@@ -15,6 +15,7 @@ export class UsersService {
         confirmpassword: string;
         role?: string;
         googleId?: string;
+        facebookId?: string;
     }): Promise<User> {
         // Kiểm tra email tồn tại
         const existingEmail = await this.userModel.findOne({ email: userData.email }).exec();

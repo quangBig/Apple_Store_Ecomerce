@@ -62,6 +62,25 @@ export class AuthController {
     async addPhone(@Request() req, @Body() body: { phone: string }) {
         return this.authService.addPhoneNumber(req.user._id, body.phone);
     }
+    @Get('facebook')
+    @UseGuards(AuthGuard('facebook'))
+    async facebookLogin() {
+        // Passport sẽ redirect tới Facebook
+    }
+
+    @Get('facebook/callback')
+    @UseGuards(AuthGuard('facebook'))
+    async facebookCallback(@Request() req) {
+        return {
+            message: 'Login Facebook thành công',
+            user: req.user,
+        };
+    }
+    @UseGuards(JwtAuthGuard)
+    @Post('facebook/add-phone')
+    async addPhone(@Request() req, @Body() body: { phone: string }) {
+        return this.authService.addPhoneNumber(req.user._id, body.phone);
+    }
 
 
     @UseGuards(JwtAuthGuard, RolesGuard)
