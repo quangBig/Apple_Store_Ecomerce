@@ -16,7 +16,7 @@ export class User extends Document {
     @Prop({
         type: String,
         required: false,  // Không bắt buộc
-        default: null,
+        default: "",
         index: {
             unique: true,
             partialFilterExpression: { phonenumber: { $type: 'string' } }

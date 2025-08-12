@@ -87,9 +87,6 @@ const RegisterPage = () => {
             await register({
 
                 name: formData.name,
-
-                name: formData.lastName,
-
                 email: formData.email,
                 phonenumber: formData.phone,
                 password: formData.password,
@@ -209,25 +206,7 @@ const RegisterPage = () => {
                                 className="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-300 text-lg"
                                 placeholder="Tên"
                             />
-
-                        <div className="grid grid-cols-2 gap-4">
-                            <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-3">
-                                    Tên *
-                                </label>
-                                <input
-                                    type="text"
-                                    name="lastName"
-                                    value={formData.name}
-                                    onChange={handleInputChange}
-                                    required
-                                    className="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all duration-300 text-lg"
-                                    placeholder="Tên"
-                                />
-                            </div>
-
                         </div>
-
 
                         <div>
                             <label className="block text-sm font-semibold text-gray-700 mb-3">

@@ -28,60 +28,26 @@ export class AuthController {
         return req.user;
     }
 
+    @Post('google')
+    async googleLogin(@Body('token') token: string) {
+        return this.authService.authenticateWithGoogle(token);
+    }
+
     @Get('google')
     @UseGuards(AuthGuard('google'))
-    async googleLogin() {
+    async googleAuth() {
 
     }
 
     @Get('google/redirect')
     @UseGuards(AuthGuard('google'))
-    async googleAuthRedirect(@Request() req) {
+    async googleAuthRedirect(@Request() req: any) {
         const { user, access_token } = req.user;
         return {
             access_token,
             user
         };
     }
-    @Get('facebook')
-    @UseGuards(AuthGuard('facebook'))
-    async facebookLogin() {
-        // Passport sẽ redirect tới Facebook
-    }
-
-    @Get('facebook/callback')
-    @UseGuards(AuthGuard('facebook'))
-    async facebookCallback(@Request() req) {
-        return {
-            message: 'Login Facebook thành công',
-            user: req.user,
-        };
-    }
-    @UseGuards(JwtAuthGuard)
-    @Post('facebook/add-phone')
-    async addPhone(@Request() req, @Body() body: { phone: string }) {
-        return this.authService.addPhoneNumber(req.user._id, body.phone);
-    }
-    @Get('facebook')
-    @UseGuards(AuthGuard('facebook'))
-    async facebookLogin() {
-        // Passport sẽ redirect tới Facebook
-    }
-
-    @Get('facebook/callback')
-    @UseGuards(AuthGuard('facebook'))
-    async facebookCallback(@Request() req) {
-        return {
-            message: 'Login Facebook thành công',
-            user: req.user,
-        };
-    }
-    @UseGuards(JwtAuthGuard)
-    @Post('facebook/add-phone')
-    async addPhone(@Request() req, @Body() body: { phone: string }) {
-        return this.authService.addPhoneNumber(req.user._id, body.phone);
-    }
-
 
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Role('admin')

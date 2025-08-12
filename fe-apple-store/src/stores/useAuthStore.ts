@@ -22,6 +22,7 @@ interface AuthState {
     register: (data: RegisterData) => Promise<void>;
     logout: () => void;
     checkAuth: () => Promise<void>;
+    loginWithGoogle: (token: string) => Promise<void>;
 }
 
 interface RegisterData {
@@ -93,6 +94,24 @@ export const useAuthStore = create<AuthState, [['zustand/persist', AuthState]]>(
                     set({ user: response.data, checkingAuth: false });
                 } catch (error) {
                     set({ user: null, checkingAuth: false });
+                }
+            },
+            loginWithGoogle: async (token: string) => {
+                set({ loading: true });
+                try {
+                    const res = await axios.post("/auth/google", { token });
+                    const { access_token, user } = res.data;
+                    set({
+                        user,
+                        token: access_token,
+                        loading: false
+                    });
+                    toast.success("Đăng nhập thành công với Google");
+                } catch (error) {
+                    console.error("Google login failed:", error);
+                    toast.error("Đăng nhập thất bại. Vui lòng thử lại.");
+                    set({ loading: false });
+                    throw error;
                 }
             },
         }),
