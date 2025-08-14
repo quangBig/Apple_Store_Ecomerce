@@ -44,9 +44,6 @@ class ProductVariantDto {
 }
 
 export class CreateProductDto {
-    @IsString()
-    @IsNotEmpty()
-    id: string;
 
     @IsString()
     @IsNotEmpty()

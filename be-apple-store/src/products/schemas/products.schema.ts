@@ -5,9 +5,6 @@ export type ProductDocument = Product & Document;
 
 @Schema({ timestamps: true })
 export class Product {
-    @Prop({ required: true, unique: true })
-    id: string;
-
     @Prop({ required: true })
     name: string;
 
@@ -25,7 +22,7 @@ export class Product {
 
     @Prop([
         {
-            id: { type: String, required: true },
+            // id: { type: String, required: true },
             name: { type: String, required: true },
             price: { type: String, required: true },
             config: { type: String },
@@ -41,7 +38,7 @@ export class Product {
         }
     ])
     variants: {
-        id: string;
+        // id: string;
         name: string;
         price: string;
         config: string;
