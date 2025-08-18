@@ -24,8 +24,7 @@ class ProductColorDto {
 }
 
 class ProductVariantDto {
-    @IsString()
-    id: string;
+
 
     @IsString()
     name: string;

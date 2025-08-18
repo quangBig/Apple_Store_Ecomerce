@@ -22,7 +22,7 @@ export class Product {
 
     @Prop([
         {
-            // id: { type: String, required: true },
+
             name: { type: String, required: true },
             price: { type: String, required: true },
             config: { type: String },
@@ -38,7 +38,6 @@ export class Product {
         }
     ])
     variants: {
-        // id: string;
         name: string;
         price: string;
         config: string;
@@ -53,4 +52,3 @@ export class Product {
 }
 
 export const ProductSchema = SchemaFactory.createForClass(Product);
-
