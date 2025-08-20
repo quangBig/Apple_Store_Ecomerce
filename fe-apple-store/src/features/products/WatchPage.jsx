@@ -7,6 +7,7 @@ import ProductList from "../../components/product/ProductList";
 import WhyAppleSection from "../../components/common/WhyAppleSection";
 import ProductDetailComparison from "../../components/product/ProductDetailComparison";
 import Footer from "../../components/layout/Footer";
+import VideoProduct from "../../components/common/VideoProduct";
 
 const watchModels = {
     "se": {
@@ -181,6 +182,7 @@ const WatchPage = () => {
                 title={data.name}
                 desc={`Chiếc ${data.name} tiên tiến nhất từ trước đến nay.`}
             />
+            <VideoProduct />
             <div className="text-4xl ml-[330px] mt-20 font-bold">
                 Tìm hiểu về {data.name}
             </div>

@@ -178,7 +178,7 @@ const ProductManagement = () => {
     };
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-6" data-aos="fade-up" data-aos-delay="300">
             <div className="flex justify-between items-center">
                 <h2 className="text-2xl font-bold">Quản lý sản phẩm</h2>
                 <button
