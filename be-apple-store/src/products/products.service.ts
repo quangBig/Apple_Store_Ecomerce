@@ -12,6 +12,10 @@ export class ProductsService {
     ) { }
 
     async create(dto: CreateProductDto): Promise<Product> {
+        const existingName = await this.productModel.findOne({ name: dto.name }).exec();
+        if (existingName) {
+            throw new NotFoundException(`Product with name ${dto.name} already exists`);
+        }
         const createdProduct = new this.productModel(dto);
         return createdProduct.save();
     }
@@ -29,6 +33,10 @@ export class ProductsService {
     }
 
     async update(_id: string, dto: UpdateProductDto): Promise<Product> {
+        const existingProduct = await this.productModel.findOne({ name: dto.name }).exec();
+        if (existingProduct && existingProduct._id.toString() !== _id) {
+            throw new NotFoundException(`Product with name ${dto.name} already exists`);
+        }
         const updated = await this.productModel.findByIdAndUpdate(_id, dto, { new: true }).exec();
         if (!updated) {
             throw new NotFoundException(`Product with id ${_id} not found`);
