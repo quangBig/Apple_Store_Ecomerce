@@ -30,7 +30,7 @@ const ProductDetailComparison = ({ products }) => {
                             style={{ boxShadow: '0 2px 8px 0 rgba(0,0,0,0.04)' }}
                         >
                             <img
-                                src={product.image}
+                                src={product.images}
                                 alt={product.name}
                                 className="w-24 h-40 object-contain mb-3"
                             />
@@ -58,18 +58,7 @@ const ProductDetailComparison = ({ products }) => {
                                 </Link>
                             </div>
                             {/* Thông số kỹ thuật dạng dọc */}
-                            <div className="w-full flex flex-col gap-3 mt-2">
-                                {specLabels.map((spec) => (
-                                    <div key={spec.key} className="flex items-start gap-2 text-gray-700 text-sm">
-                                        <div>
-                                            <span className="font-medium">{spec.key}: </span>
-                                            {product.specs && product.specs[spec.key]
-                                                ? <span className="whitespace-pre-line">{product.specs[spec.key]}</span>
-                                                : <span className="text-gray-300">—</span>}
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
+
                         </div>
                     ))}
                 </div>

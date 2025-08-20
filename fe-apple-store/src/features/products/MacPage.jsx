@@ -6,6 +6,7 @@ import WhyAppleSection from "../../components/common/WhyAppleSection";
 import ProductDetailComparison from "../../components/product/ProductDetailComparison";
 import Footer from "../../components/layout/Footer";
 import { useParams } from "react-router-dom";
+import VideoProduct from "../../components/common/VideoProduct";
 
 const macModels = {
     "air": {
@@ -209,6 +210,7 @@ const MacPage = () => {
                 title={data.name}
                 desc={`Trải nghiệm ${data.name} đỉnh cao.`}
             />
+            <VideoProduct />
             <div className="text-4xl ml-[330px] mt-20 font-bold">
                 Tìm hiểu về {data.name}
             </div>
