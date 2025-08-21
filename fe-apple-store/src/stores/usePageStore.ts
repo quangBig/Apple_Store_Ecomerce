@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from "../lib/axios";
 import { toast } from "react-toastify";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
@@ -7,8 +7,9 @@ export interface Page {
     _id: string;
     title: string;
     decs: string;
-    imgae: string;
+    image: string;
     link: string;
+    reverse?: boolean;
     createdAt?: string;
     updatedAt?: string;
 }
@@ -39,7 +40,7 @@ export const usePageStore = create<PageState>()(
                     toast.success("Tạo trang thành công");
                 } catch (err) {
                     set({ loading: false });
-                    toast.error("Tạo trang thất bại");
+                    toast.error("Tạo trang thất bại " + err.message);
                 }
             },
             getPages: async () => {

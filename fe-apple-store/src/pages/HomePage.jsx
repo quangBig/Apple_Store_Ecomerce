@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import HeroSection from "../components/sections/HeroSection";
 import { Link } from 'react-router-dom';
 import Header from "../components/layout/Header";
@@ -7,6 +7,8 @@ import ContactSection from "../components/sections/ContactSection";
 import AboutSection from "../components/sections/AboutSection";
 import Footer from "../components/layout/Footer";
 import ChatBot from "../components/common/ChatBot";
+import { usePageStore } from "../stores/usePageStore";
+
 
 const products = [
     {
@@ -43,19 +45,30 @@ const products = [
     },
 ];
 
-const HomePage = () => (
-    <div className="w-full min-h-screen bg-white text-black">
-        <Header />
-        <HeroSection />
 
-        {products.map((p, idx) => (
-            <ProductSection key={p.title} {...p} aosDelay={idx * 150} />
-        ))}
-        <ContactSection />
-        <AboutSection />
-        <Footer />
-        <ChatBot />
-    </div>
-);
+
+const HomePage = () => {
+    const { getPages, pages } = usePageStore();
+    useEffect(() => {
+        getPages();
+    }, [getPages]);
+    console.log("Pages:", pages);
+    return (
+
+        <div className="w-full min-h-screen bg-white text-black">
+            <Header />
+            <HeroSection />
+
+            {pages.map((p, idx) => (
+                <ProductSection key={p.title} {...p} aosDelay={idx * 150} />
+            ))}
+            <ContactSection />
+            <AboutSection />
+            <Footer />
+            <ChatBot />
+        </div>
+
+    )
+};
 
 export default HomePage; 
