@@ -9,6 +9,7 @@ const ProductManagement = () => {
     const { getProducts, products, createProduct, loading, updateProduct, deleteProduct } = useProductStore();
     const [selectedId, setSelectedId] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
+    console.log(products);
 
     // Khởi tạo state cho sản phẩm mới
     const getInitialProductState = () => ({
@@ -170,6 +171,7 @@ const ProductManagement = () => {
             getProducts();
         }
     };
+
 
     // Đóng form và reset
     const handleCloseForm = () => {
