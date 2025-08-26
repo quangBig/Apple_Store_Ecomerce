@@ -16,7 +16,7 @@ export class Page {
 
     @Prop({
         type: [raw({
-            // 👇 Mongoose sẽ tự sinh _id cho từng section
+
             _id: { type: Types.ObjectId, auto: true },
             nameSection: { type: String },
             description: { type: String },
@@ -27,7 +27,7 @@ export class Page {
         default: [],
     })
     sections: {
-        _id?: Types.ObjectId;   // 👈 optional
+        _id?: Types.ObjectId;
         nameSection?: string;
         description?: string;
         image?: string;
@@ -37,7 +37,7 @@ export class Page {
 
     @Prop({
         type: [raw({
-            _id: { type: Types.ObjectId, auto: true },  // 👈 tương tự cho AboutUs
+            _id: { type: Types.ObjectId, auto: true },
             nameaboutUs: { type: String },
             description: { type: String },
             image: { type: String },
@@ -45,7 +45,7 @@ export class Page {
         default: [],
     })
     aboutUs?: {
-        _id?: Types.ObjectId;   // 👈 optional
+        _id?: Types.ObjectId;
         nameaboutUs?: string;
         description?: string;
         image?: string;
