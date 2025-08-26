@@ -62,7 +62,7 @@ const PageManagement = () => {
         try {
             if (isEditing && selectedId) {
                 await updatePage(selectedId, form);
-                toast.success("Cập nhật banner thành công");
+
             } else {
                 await createPage(form);
                 toast.success("Thêm banner thành công");
@@ -121,8 +121,8 @@ const PageManagement = () => {
                     <button
                         key={tab}
                         className={`px-4 py-2 font-medium ${activeTab === tab
-                                ? "text-blue-600 border-b-2 border-blue-600"
-                                : "text-gray-600"
+                            ? "text-blue-600 border-b-2 border-blue-600"
+                            : "text-gray-600"
                             }`}
                         onClick={() => setActiveTab(tab)}
                     >
