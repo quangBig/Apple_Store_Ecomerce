@@ -12,7 +12,7 @@ import { PagesModule } from './page/page.module';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true, // Make environment variables available throughout the app
-      envFilePath: '.env', // Explicitly specify the env file path
+      envFilePath: '.env', // Explicitly specify the env file paths
     }),
     MongooseModule.forRoot(process.env.MONGO_URI!, {
       autoIndex: true, // Automatically build indexes (good for development)

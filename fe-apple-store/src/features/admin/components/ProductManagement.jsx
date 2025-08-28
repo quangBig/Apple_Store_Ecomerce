@@ -14,7 +14,7 @@ const ProductManagement = () => {
     // Khởi tạo state cho sản phẩm mới
     const getInitialProductState = () => ({
         _id: "",
-        name: "",  
+        name: "",
         description: "",
         Outstandingfeatures: "",
         category: "",
