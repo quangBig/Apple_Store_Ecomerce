@@ -18,8 +18,12 @@ const specLabels = [
 const ProductDetailComparison = ({ products }) => {
     return (
         <div className="w-full bg-[#fafafd] py-8 px-2 md:px-8">
-            <h1 className="text-4xl ml-20 mt-10 mb-20 font-bold"> Các sản phẩm liên quan </h1>
-            <div className="w-full flex justify-center">
+            <div className="text-3xl font-semibold ml-20 mt-10 whitespace-pre-line">
+                <h1>
+                    Các sản phẩm tương tự
+                </h1>
+            </div>
+            <div className="w-full flex justify-center mt-10">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-center content-center">
 
 

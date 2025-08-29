@@ -1,23 +1,27 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-
+import { Document } from "mongoose";
 
 export type PageDocument = Page & Document;
+
 @Schema({ timestamps: true })
 export class Page {
     @Prop({ required: true })
     title: string;
 
-    @Prop({ required: true })
+    @Prop()
     decs: string;
 
-    @Prop({ required: true })
+    @Prop()
     image: string;
 
-    @Prop({ required: true })
+    @Prop()
     link: string;
 
-    @Prop({ required: true })
+    @Prop({ default: false })
     reverse: boolean;
+
+    @Prop({ default: 0 })
+    position: number; // để sắp xếp
 }
 
 export const PageSchema = SchemaFactory.createForClass(Page);

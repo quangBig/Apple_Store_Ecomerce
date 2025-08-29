@@ -3,7 +3,7 @@ import React from "react";
 import { useParams } from "react-router-dom";
 import DeviceShowcase from "../../components/sections/DeviceShowcase";
 import FeatureCarousel from "../../components/common/FeatureCarousel";
-import ProductList from "../../components/product/ProductList";
+import ProductConnect from "../../components/product/ProductConnect";
 import WhyAppleSection from "../../components/common/WhyAppleSection";
 import ProductDetailComparison from "../../components/product/ProductDetailComparison";
 import Footer from "../../components/layout/Footer";
@@ -188,7 +188,7 @@ const WatchPage = () => {
             </div>
             <FeatureCarousel features={data.features} />
             <div className="max-w-6xl mx-auto px-4 pb-16">
-                <ProductList />
+                <ProductConnect />
             </div>
             <WhyAppleSection />
             <ProductDetailComparison products={watchProducts} />

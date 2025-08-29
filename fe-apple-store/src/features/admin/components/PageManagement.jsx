@@ -12,31 +12,46 @@ import {
     AlertDialogTrigger,
     AlertDialogFooter,
 } from "../../../components/ui/alert-dialog";
+import { usePageProductStore } from "../../../stores/usePageProduct";
 
-// State ban đầu cho banner
+/* ==== STATE ==== */
 const getInitialPageState = () => ({
     title: "",
-    decs: "",
+    desc: "",   // ✅ sửa decs -> desc
     image: "",
     link: "",
     reverse: false,
 });
 
+const getInitialProductState = () => ({
+    name: "",
+    slug: "",
+    image: "",
+});
+
 const PageManagement = () => {
     const [activeTab, setActiveTab] = useState("home");
     const [form, setForm] = useState(getInitialPageState);
+    const [productForm, setProductForm] = useState(getInitialProductState);
     const [imagePreview, setImagePreview] = useState(null);
     const [selectedId, setSelectedId] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
+    const [isEditingProduct, setIsEditingProduct] = useState(false);
+    const [selectedProductId, setSelectedProductId] = useState(null);
 
-    const { pages, createPage, getPages, deletePage, updatePage } = usePageStore();
+    const { pages, createPage, getPages, deletePage, updatePage, reorderPages } = usePageStore();
+    const { pageProducts, getPageProducts, createPageProduct, deletePageProduct, updatePageProduct } = usePageProductStore();
 
-    // Fetch pages khi load
+    useEffect(() => {
+        getPageProducts();
+    }, [getPageProducts]);
+
     useEffect(() => {
         getPages();
     }, [getPages]);
+    console.log("pages", pages);
 
-    // Xử lý input
+    /* ==== FORM HANDLERS ==== */
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
         setForm((prev) => ({
@@ -45,7 +60,6 @@ const PageManagement = () => {
         }));
     };
 
-    // Upload ảnh
     const handleImageUpload = (file) => {
         if (!file) return;
         const reader = new FileReader();
@@ -56,25 +70,59 @@ const PageManagement = () => {
         reader.readAsDataURL(file);
     };
 
-    // Submit form
-    const handleSubmit = async (e) => {
+    const handleProductChange = (e) => {
+        const { name, value } = e.target;
+        setProductForm((prev) => ({ ...prev, [name]: value }));
+    };
+
+    const handleProductImageUpload = (file) => {
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            setImagePreview(reader.result);
+            setProductForm((prev) => ({ ...prev, image: reader.result }));
+        };
+        reader.readAsDataURL(file);
+    };
+
+    /* ==== SUBMIT ==== */
+    const handleSubmitPageHome = async (e) => {
         e.preventDefault();
         try {
             if (isEditing && selectedId) {
                 await updatePage(selectedId, form);
-
+                toast.success("Cập nhật banner thành công");
             } else {
                 await createPage(form);
                 toast.success("Thêm banner thành công");
             }
-
             resetForm();
         } catch (error) {
             toast.error("Lỗi khi lưu trang: " + error.message);
         }
     };
 
-    // Reset form
+    const handleSubmitPageProduct = async (e) => {
+        e.preventDefault();
+        try {
+            if (isEditingProduct && selectedProductId) {
+                await updatePageProduct(selectedProductId, productForm);
+                toast.success("Cập nhật danh mục thành công");
+            } else {
+                await createPageProduct(productForm);
+                toast.success("Thêm danh mục thành công");
+            }
+
+            setProductForm(getInitialProductState());
+            setImagePreview(null);
+            setIsEditingProduct(false);
+            setSelectedProductId(null);
+        } catch (error) {
+            toast.error("Lỗi khi lưu danh mục: " + error.message);
+        }
+    };
+
+    /* ==== RESET ==== */
     const resetForm = () => {
         setForm(getInitialPageState());
         setImagePreview(null);
@@ -82,11 +130,11 @@ const PageManagement = () => {
         setIsEditing(false);
     };
 
-    // Edit
+    /* ==== EDIT ==== */
     const handleEdit = (page) => {
         setForm({
             title: page.title,
-            decs: page.decs,
+            desc: page.desc,   // ✅ dùng desc
             image: page.image,
             link: page.link,
             reverse: page.reverse,
@@ -96,21 +144,71 @@ const PageManagement = () => {
         setIsEditing(true);
     };
 
-    // Delete
+    const handleEditProduct = (product) => {
+        setProductForm({
+            name: product.name,
+            slug: product.slug,
+            image: product.image,
+        });
+        setImagePreview(product.image);
+        setSelectedProductId(product._id);
+        setIsEditingProduct(true);
+    };
+
+    /* ==== DELETE ==== */
     const handleDelete = async () => {
         if (!selectedId) return;
         try {
             await deletePage(selectedId);
-            toast.success("Xóa thành công");
+            toast.success("Xóa banner thành công");
             setSelectedId(null);
         } catch (error) {
             toast.error("Xóa trang thất bại: " + error.message);
         }
     };
 
+    const handleDeleteProduct = async () => {
+        if (!selectedId) return;
+        try {
+            await deletePageProduct(selectedId);
+            toast.success("Xóa danh mục thành công");
+            setSelectedId(null);
+        } catch (error) {
+            toast.error("Xóa danh mục thất bại: " + error.message);
+        }
+    };
+
+    /* ==== REORDER ==== */
+    const moveUp = async (index) => {
+        if (index === 0) return;
+        const newPages = [...pages];
+        [newPages[index - 1], newPages[index]] = [newPages[index], newPages[index - 1]];
+
+        const newOrder = newPages.map((p, idx) => ({
+            id: p._id,
+            position: idx + 1,
+        }));
+
+        await reorderPages(newOrder);
+    };
+
+    const moveDown = async (index) => {
+        if (index === pages.length - 1) return;
+        const newPages = [...pages];
+        [newPages[index], newPages[index + 1]] = [newPages[index + 1], newPages[index]];
+
+        const newOrder = newPages.map((p, idx) => ({
+            id: p._id,
+            position: idx + 1,
+        }));
+
+        await reorderPages(newOrder);
+    };
+
+
+    /* ==== UI ==== */
     return (
         <div className="space-y-6" data-aos="fade-up" data-aos-delay="300">
-            {/* Header */}
             <div className="flex justify-between items-center">
                 <h2 className="text-2xl font-bold text-gray-800">Quản lý trang</h2>
             </div>
@@ -137,9 +235,9 @@ const PageManagement = () => {
                     <h3 className="text-lg font-semibold mb-6">Quản lý Trang chủ</h3>
 
                     {/* Form */}
-                    <form className="space-y-4" onSubmit={handleSubmit}>
+                    <form className="space-y-4" onSubmit={handleSubmitPageHome}>
                         <Input label="Tiêu đề" name="title" value={form.title} onChange={handleChange} />
-                        <Textarea label="Mô tả" name="decs" value={form.decs} onChange={handleChange} />
+                        <Textarea label="Mô tả" name="desc" value={form.desc} onChange={handleChange} />
 
                         {/* Upload ảnh */}
                         <div>
@@ -178,7 +276,6 @@ const PageManagement = () => {
                             </label>
                         </div>
 
-                        {/* Buttons */}
                         <div className="flex gap-3">
                             <button
                                 type="submit"
@@ -205,6 +302,7 @@ const PageManagement = () => {
                             <table className="min-w-full border border-gray-200">
                                 <thead className="bg-gray-100">
                                     <tr>
+                                        <th className="px-4 py-2 border">Sắp xếp</th>
                                         <th className="px-4 py-2 border">Tiêu đề</th>
                                         <th className="px-4 py-2 border">Mô tả</th>
                                         <th className="px-4 py-2 border">Ảnh</th>
@@ -214,16 +312,26 @@ const PageManagement = () => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {pages.map((page) => (
+                                    {pages.map((page, index) => (
                                         <tr key={page._id}>
+                                            <td className="px-4 py-2 border text-center">
+                                                <button
+                                                    onClick={() => moveUp(index)}
+                                                    className="px-2 py-1 bg-gray-200 rounded mr-1"
+                                                >
+                                                    ⬆
+                                                </button>
+                                                <button
+                                                    onClick={() => moveDown(index)}
+                                                    className="px-2 py-1 bg-gray-200 rounded"
+                                                >
+                                                    ⬇
+                                                </button>
+                                            </td>
                                             <td className="px-4 py-2 border">{page.title}</td>
-                                            <td className="px-4 py-2 border">{page.decs}</td>
+                                            <td className="px-4 py-2 border">{page.desc}</td>
                                             <td className="px-4 py-2 border">
-                                                <img
-                                                    src={page.image}
-                                                    alt="banner"
-                                                    className="h-12 rounded"
-                                                />
+                                                <img src={page.image} alt="banner" className="h-12 rounded" />
                                             </td>
                                             <td className="px-4 py-2 border">{page.link}</td>
                                             <td className="px-4 py-2 border text-center">
@@ -278,54 +386,115 @@ const PageManagement = () => {
 
                     {/* Danh mục sản phẩm */}
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
-                        {[
-                            { name: "iPhone", slug: "iphone", count: 15, icon: "📱", color: "blue" },
-                            { name: "iPad", slug: "ipad", count: 8, icon: "📱", color: "purple" },
-                            { name: "Mac", slug: "mac", count: 12, icon: "💻", color: "green" },
-                        ].map((category, index) => (
+                        {pageProducts.map((pP, index) => (
                             <div key={index} className="border rounded-lg p-4 hover:shadow-md transition">
                                 <div className="flex items-center justify-between mb-3">
-                                    <div className={`w-12 h-12 flex items-center justify-center rounded-full text-2xl
-                                            ${category.color === "blue" ? "bg-blue-100 text-blue-600" :
-                                            category.color === "purple" ? "bg-purple-100 text-purple-600" :
-                                                category.color === "green" ? "bg-green-100 text-green-600" : "bg-gray-100 text-gray-600"}`}>
-                                        {category.icon}
+                                    <div className="text-2xl">
+                                        <img src={pP.image} alt="banner" className="h-12 rounded" />
                                     </div>
                                     <div className="flex space-x-2">
-                                        <button className="text-blue-600 hover:text-blue-800 text-sm">Sửa</button>
-                                        <button className="text-red-600 hover:text-red-800 text-sm">Xóa</button>
+                                        <button
+                                            className="text-blue-600 hover:text-blue-800 text-sm"
+                                            onClick={() => handleEditProduct(pP)}
+                                        >
+                                            Sửa
+                                        </button>
+                                        <AlertDialog>
+                                            <AlertDialogTrigger asChild>
+                                                <button
+                                                    className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 text-sm"
+                                                    onClick={() => setSelectedId(pP._id)}
+                                                >
+                                                    Xóa
+                                                </button>
+                                            </AlertDialogTrigger>
+                                            <AlertDialogContent>
+                                                <AlertDialogHeader>
+                                                    <AlertDialogTitle>Xóa danh mục?</AlertDialogTitle>
+                                                    <AlertDialogDescription>
+                                                        Bạn có chắc chắn muốn xóa{" "}
+                                                        <b>{pP.name}</b>? Hành động này không thể
+                                                        hoàn tác.
+                                                    </AlertDialogDescription>
+                                                </AlertDialogHeader>
+                                                <AlertDialogFooter>
+                                                    <AlertDialogCancel>Hủy</AlertDialogCancel>
+                                                    <AlertDialogAction onClick={handleDeleteProduct}>
+                                                        Xóa
+                                                    </AlertDialogAction>
+                                                </AlertDialogFooter>
+                                            </AlertDialogContent>
+                                        </AlertDialog>
                                     </div>
                                 </div>
-                                <h4 className="font-semibold text-gray-900 mb-1">{category.name}</h4>
-                                <p className="text-sm text-gray-500 mb-2">/{category.slug}</p>
-                                <p className="text-sm text-gray-600">{category.count} sản phẩm</p>
+                                <h4 className="font-semibold text-gray-900 mb-1">{pP.name}</h4>
+                                <p className="text-sm text-gray-500 mb-2">{pP.slug}</p>
                             </div>
                         ))}
                     </div>
 
                     {/* Form thêm danh mục */}
-                    <h4 className="text-md font-semibold mb-4">Thêm danh mục mới</h4>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                        <input type="text" placeholder="Tên danh mục" className="px-3 py-2 border rounded-lg" />
-                        <input type="text" placeholder="Slug" className="px-3 py-2 border rounded-lg" />
-                        <select className="px-3 py-2 border rounded-lg">
-                            <option>📱 Phone</option>
-                            <option>💻 Laptop</option>
-                            <option>⌚ Watch</option>
-                            <option>🎧 Headphones</option>
-                            <option>🔧 Accessories</option>
-                        </select>
-                        <select className="px-3 py-2 border rounded-lg">
-                            <option value="blue">Xanh dương</option>
-                            <option value="purple">Tím</option>
-                            <option value="green">Xanh lá</option>
-                        </select>
-                    </div>
-                    <div className="flex justify-end">
-                        <button className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700">
-                            Thêm danh mục
-                        </button>
-                    </div>
+                    <form onSubmit={handleSubmitPageProduct} className="space-y-4 mb-6">
+                        <h4 className="text-md font-semibold mb-4">
+                            {isEditingProduct ? "Cập nhật danh mục" : "Thêm danh mục mới"}
+                        </h4>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                            <input
+                                type="text"
+                                name="name"
+                                value={productForm.name}
+                                onChange={handleProductChange}
+                                placeholder="Tên danh mục"
+                                className="px-3 py-2 border rounded-lg"
+                            />
+                            <input
+                                type="text"
+                                name="slug"
+                                value={productForm.slug}
+                                onChange={handleProductChange}
+                                placeholder="Slug (đường dẫn)"
+                                className="px-3 py-2 border rounded-lg"
+                            />
+                            <div>
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={(e) => handleProductImageUpload(e.target.files[0])}
+                                />
+                                {imagePreview && (
+                                    <div className="mt-4">
+                                        <img
+                                            src={imagePreview}
+                                            alt="preview"
+                                            className="h-40 rounded-lg border shadow-md"
+                                        />
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                        <div className="flex justify-end">
+                            <button
+                                className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700"
+                                type="submit"
+                            >
+                                {isEditingProduct ? "Cập nhật danh mục" : "Thêm danh mục"}
+                            </button>
+                            {isEditingProduct && (
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setProductForm(getInitialProductState());
+                                        setImagePreview(null);
+                                        setIsEditingProduct(false);
+                                        setSelectedProductId(null);
+                                    }}
+                                    className="ml-3 bg-gray-400 text-white px-6 py-2 rounded-lg hover:bg-gray-500"
+                                >
+                                    Hủy
+                                </button>
+                            )}
+                        </div>
+                    </form>
                 </div>
             )}
         </div>
@@ -339,6 +508,7 @@ const Input = ({ label, ...props }) => (
     <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">
             {label}
+
         </label>
         <input
             {...props}

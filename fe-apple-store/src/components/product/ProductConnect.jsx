@@ -32,8 +32,12 @@ const products = [
 const ProductList = () => {
     return (
         <>
+            <div className="text-3xl font-semibold ml-20 mt-10 whitespace-pre-line">
+                <h1>
+                    Nửa kia hoàn hảo
+                </h1>
+            </div>
             <div>
-                <div className=" text-4xl -ml-60 mt-20 font-bold "> Nửa kia hoàn hảo</div>
                 <ProductGrid>
                     {products.map((product, idx) => (
                         <ProductCard key={idx} {...product} />

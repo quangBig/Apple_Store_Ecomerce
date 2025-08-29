@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import LocalMallIcon from '@mui/icons-material/LocalMall';
@@ -6,6 +6,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import { useAuthStore } from "../../stores/useAuthStore";
+import { usePageProductStore } from "../../stores/usePageProduct";
 
 const menu = [
     {
@@ -63,6 +64,10 @@ const Header = ({ logoColor = "#000" }) => {
     const [showUserMenu, setShowUserMenu] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [mobileSubMenu, setMobileSubMenu] = useState(null);
+    const { pageProducts, getPageProducts } = usePageProductStore();
+    useEffect(() => {
+        getPageProducts();
+    }, [getPageProducts]);
 
     const user = useAuthStore((state) => state.user);
     const logout = useAuthStore((state) => state.logout);
@@ -105,28 +110,16 @@ const Header = ({ logoColor = "#000" }) => {
                     <li>
                         <Link to="/" className="hover:text-blue-500 transition">Home</Link>
                     </li>
-                    {menu.map((item, idx) => (
+                    {pageProducts.map((item, idx) => (
                         <li
                             key={item.name}
                             className="relative"
                             onMouseEnter={() => setOpenMenu(idx)}
                             onMouseLeave={() => setOpenMenu(null)}
                         >
-                            <Link to={item.link} className="hover:text-blue-500 transition">{item.name}</Link>
-                            {item.children && openMenu === idx && (
-                                <ul className="absolute -mt-2 -translate-x-1/2 top-full min-w-[180px] bg-white rounded-xl shadow-lg py-2 z-50 animate-fadein border border-gray-100">
-                                    {item.children.map((child) => (
-                                        <li key={child.name}>
-                                            <Link
-                                                to={child.link}
-                                                className="block px-5 py-2 text-gray-700 hover:bg-gray-100 hover:text-blue-500 rounded transition"
-                                            >
-                                                {child.name}
-                                            </Link>
-                                        </li>
-                                    ))}
-                                </ul>
-                            )}
+                            <Link to={item.slug} className="hover:text-blue-500 transition">{item.name}</Link>
+
+
                         </li>
                     ))}
                 </ul>

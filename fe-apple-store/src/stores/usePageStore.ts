@@ -10,6 +10,7 @@ export interface Page {
     image: string;
     link: string;
     reverse?: boolean;
+    position?: number;
     createdAt?: string;
     updatedAt?: string;
 }
@@ -22,6 +23,7 @@ interface PageState {
     getPageById: (id: string) => Promise<Page>;
     updatePage: (id: string, data: Partial<Page>) => Promise<void>;
     deletePage: (id: string) => Promise<void>;
+    reorderPages: (newOrder: { id: string; position: number }[]) => Promise<void>;
 }
 
 export const usePageStore = create<PageState>()(
@@ -95,6 +97,20 @@ export const usePageStore = create<PageState>()(
                     toast.error("Xóa trang thất bại");
                 }
             },
+            reorderPages: async (newOrder: { id: string; position: number }[]) => {
+                set({ loading: true });
+                try {
+                    // Gửi object có key newOrder
+                    const res = await axios.post("/pages/reorder", newOrder);
+                    set({ pages: res.data, loading: false });
+                    toast.success("Sắp xếp lại trang thành công");
+                } catch (err: any) {
+                    set({ loading: false });
+                    console.log(err, " err");
+                    toast.error("Sắp xếp thất bại: " + err.message);
+                }
+            }
+
         }),
         { name: "page-store" }
     )
