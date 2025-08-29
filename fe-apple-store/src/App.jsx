@@ -19,10 +19,16 @@ import { useEffect } from "react";
 import { useAuthStore } from "./stores/useAuthStore";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { usePageProductStore } from "./stores/usePageProduct";
 
 
 function App() {
   const checkAuth = useAuthStore((state) => state.checkAuth);
+  const { pageProducts, getPageProducts } = usePageProductStore();;
+  useEffect(() => {
+    getPageProducts();
+  }, [getPageProducts]);
+  console.log("Page Products:", pageProducts);
   useEffect(() => {
     checkAuth();
     // eslint-disable-next-line

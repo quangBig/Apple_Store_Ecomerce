@@ -1,7 +1,7 @@
 import React from "react";
 import DeviceShowcase from "../../components/sections/DeviceShowcase";
 import FeatureCarousel from "../../components/common/FeatureCarousel";
-import ProductList from "../../components/product/ProductList";
+import ProductConnect from "../../components/product/ProductConnect";
 import WhyAppleSection from "../../components/common/WhyAppleSection";
 import ProductDetailComparison from "../../components/product/ProductDetailComparison";
 import Footer from "../../components/layout/Footer";
@@ -211,12 +211,15 @@ const MacPage = () => {
                 desc={`Trải nghiệm ${data.name} đỉnh cao.`}
             />
             <VideoProduct />
-            <div className="text-4xl ml-[330px] mt-20 font-bold">
-                Tìm hiểu về {data.name}
+
+            <div className="text-3xl font-semibold ml-20 mt-10 whitespace-pre-line">
+                <h1>
+                    Tìm hiểu về {data.name}
+                </h1>
             </div>
             <FeatureCarousel features={data.features} />
-            <div className="max-w-6xl mx-auto px-4 pb-16">
-                <ProductList />
+            <div className=" px-4 pb-16">
+                <ProductConnect />
             </div>
             <WhyAppleSection />
             <ProductDetailComparison products={macProducts} />

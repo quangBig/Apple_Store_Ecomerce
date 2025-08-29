@@ -35,9 +35,15 @@ const reasons = [
 const WhyAppleSection = () => (
 
     <div className="w-full py-16 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4">
-            <h2 className="text-3xl md:text-4xl font-bold mb-8 text-gray-900 text-center">Vì sao Apple Store là nơi tốt nhất để mua sản phẩm Apple</h2>
-            <div className="overflow-x-auto pb-4">
+        <div className="text-3xl font-semibold ml-20 mt-10 whitespace-pre-line">
+            <h1>
+                Vì sao Apple Store là nơi tốt nhất để mua sản phẩm Apple
+            </h1>
+        </div>
+        <div className="max-w-7xl mx-auto px-4 mt-10">
+
+
+            <div className=" pb-4">
                 <ul className="flex md:grid md:grid-cols-4 gap-6 min-w-[700px] md:min-w-0">
                     {reasons.map((item, idx) => (
                         <li key={idx} className="flex-shrink-0 w-72 md:w-auto bg-white rounded-2xl shadow-xl p-6 flex flex-col items-center text-center transition-transform duration-300 hover:scale-105">

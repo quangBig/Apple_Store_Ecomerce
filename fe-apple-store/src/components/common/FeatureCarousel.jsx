@@ -15,7 +15,7 @@ const FeatureCarousel = ({ features = [] }) => {
     };
 
     return (
-        <div className="w-full py-8">
+        <div className="w-full py-8 ml-10">
 
             <div
                 ref={scrollRef}

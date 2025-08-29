@@ -5,6 +5,7 @@ import { Page, PageSchema } from "./schemas/page.schema";
 import { PagesController } from "./page.controller";
 import { PagesService } from "./page.service";
 
+
 @Module({
     imports: [MongooseModule.forFeature([{ name: Page.name, schema: PageSchema }])],
     controllers: [PagesController],

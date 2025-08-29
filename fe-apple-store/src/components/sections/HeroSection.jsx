@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 const HeroSection = () => (
-    <section className="w-full min-h-[60vh] flex flex-col items-center justify-center bg-gradient-to-br from-gray-100 to-white py-16 px-4 text-center animate-fadein">
+    <section className="w-full min-h-[60vh] flex flex-col items-center justify-center bg-gradient-to-br  to-white py-16 px-4 text-center animate-fadein mt-5">
         <h1 className="text-5xl md:text-7xl font-extrabold mb-6 text-gray-900 leading-tight drop-shadow-lg">
             Welcome to Apple Store
         </h1>

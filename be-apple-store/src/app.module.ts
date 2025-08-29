@@ -6,7 +6,8 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { ProductsModule } from './products/products.module';
-import { PagesModule } from './page/page.module';
+import { PagesModule } from './page-home/page.module';
+import { PageProductsModule } from './page-prodcuts/page-products.module';
 
 @Module({
   imports: [
@@ -20,7 +21,8 @@ import { PagesModule } from './page/page.module';
     AuthModule,
     UsersModule,
     ProductsModule,
-    PagesModule // Ensure ProductsModule is imported here
+    PagesModule,
+    PageProductsModule // Ensure ProductsModule is imported here
   ],
   controllers: [AppController],
   providers: [AppService],

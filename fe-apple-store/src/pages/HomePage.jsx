@@ -8,6 +8,9 @@ import AboutSection from "../components/sections/AboutSection";
 import Footer from "../components/layout/Footer";
 import ChatBot from "../components/common/ChatBot";
 import { usePageStore } from "../stores/usePageStore";
+import ProductCarousel from "../components/product/ProductCarousel";
+import Card from "@mui/material/Card";
+import CardShelfCarousel from "../components/common/CardShelfCarousel.JSX";
 
 
 const products = [
@@ -57,8 +60,15 @@ const HomePage = () => {
 
         <div className="w-full min-h-screen bg-white text-black">
             <Header />
-            <HeroSection />
 
+            <ProductCarousel />
+            <HeroSection />
+            <CardShelfCarousel />
+            <div className="text-3xl font-semibold ml-20 mt-10 whitespace-pre-line">
+                <h1>
+                    Dòng sản phẩm
+                </h1>
+            </div>
             {pages.map((p, idx) => (
                 <ProductSection key={p.title} {...p} aosDelay={idx * 150} />
             ))}
