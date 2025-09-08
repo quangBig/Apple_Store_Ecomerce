@@ -16,8 +16,7 @@ export interface Product {
         name: string;
         price: string;
         config?: string;
-        colors?:
-        {
+        colors?: {
             _id?: string;
             name?: string;
             value?: string;
@@ -52,7 +51,6 @@ export const useProductStore = create<ProductState>()(
                 set({ loading: true });
                 try {
                     const res = await axios.get("/products");
-                    console.log(res.data, 'res.data');
                     set({ products: res.data, loading: false });
                 } catch (err) {
                     set({ loading: false });
@@ -74,8 +72,15 @@ export const useProductStore = create<ProductState>()(
             createProduct: async (data) => {
                 set({ loading: true });
                 try {
-                    const res = await axios.post("/products", data);
-                    set({ products: [...get().products, res.data], loading: false });
+                    // loại bỏ _id rỗng/null
+                    const { _id, ...rest } = data;
+                    const payload = _id ? { _id, ...rest } : rest;
+
+                    const res = await axios.post("/products", payload);
+                    set({
+                        products: [...get().products, res.data],
+                        loading: false,
+                    });
                     toast.success("Thêm sản phẩm thành công");
                 } catch (err: any) {
                     set({ loading: false });
@@ -88,7 +93,9 @@ export const useProductStore = create<ProductState>()(
                 try {
                     const res = await axios.put(`/products/${id}`, data);
                     set({
-                        products: get().products.map((p) => (p._id === id ? res.data : p)),
+                        products: get().products.map((p) =>
+                            p._id === id ? res.data : p
+                        ),
                         loading: false,
                     });
                     toast.success("Cập nhật sản phẩm thành công");
@@ -115,6 +122,11 @@ export const useProductStore = create<ProductState>()(
         }),
         {
             name: "product-store",
+            // ❌ Không persist toàn bộ state
+            // ✅ Chỉ persist state nhỏ cần thiết
+            partialize: (state) => ({
+                product: state.product,
+            }),
         }
     )
 );

@@ -112,13 +112,13 @@ const DeviceShowcase = ({ products, title, desc }) => {
                             />
                         ))}
                     </div>
-                    <div className="w-full flex justify-center p-5">
+                    {/* <div className="w-full flex justify-center p-5">
                         <button
                             className={`px-4 sm:px-5 md:px-6 py-1 sm:py-1.5 md:py-2 text-sm sm:text-base md:text-lg rounded-full border transition ${variant.btn}`}
                         >
                             Buy Now
                         </button>
-                    </div>
+                    </div> */}
                 </div>
             </div>
         </section>

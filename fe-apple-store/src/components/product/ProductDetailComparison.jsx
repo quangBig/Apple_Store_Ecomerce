@@ -1,26 +1,15 @@
-import React from "react";
+
 import { Link } from "react-router-dom";
-import MemoryIcon from '@mui/icons-material/Memory';
-import PsychologyIcon from '@mui/icons-material/Psychology';
-import CameraIcon from '@mui/icons-material/Camera';
-import FiberPinIcon from '@mui/icons-material/FiberPin';
-
-// Ví dụ icon tạm thời, có thể thay bằng icon SVG hoặc thư viện icon
 
 
-const specLabels = [
-    { key: <MemoryIcon />, label: "Chip" },
-    { key: <PsychologyIcon />, label: "Apple Intelligence" },
-    { key: <CameraIcon />, label: "Camera" },
-    { key: <FiberPinIcon />, label: "Thời gian xem video" },
-];
+
 
 const ProductDetailComparison = ({ products }) => {
     return (
         <div className="w-full bg-[#fafafd] py-8 px-2 md:px-8">
             <div className="text-3xl font-semibold ml-20 mt-10 whitespace-pre-line">
                 <h1>
-                    Các sản phẩm tương tự
+                    Khám phá các dòng sản phẩm
                 </h1>
             </div>
             <div className="w-full flex justify-center mt-10">
@@ -34,7 +23,7 @@ const ProductDetailComparison = ({ products }) => {
                             style={{ boxShadow: '0 2px 8px 0 rgba(0,0,0,0.04)' }}
                         >
                             <img
-                                src={product.images}
+                                src={product.images[0]}
                                 alt={product.name}
                                 className="w-24 h-40 object-contain mb-3"
                             />
@@ -51,7 +40,7 @@ const ProductDetailComparison = ({ products }) => {
                                 </div>
                             )}
                             <h3 className="font-semibold text-lg mb-1 text-center">{product.name}</h3>
-                            <p className="text-gray-500 text-sm mb-2 text-center">{product.description}</p>
+                            <p className="text-gray-500 text-sm mb-2 text-center">{product.Outstandingfeatures}</p>
                             <p className="text-black font-bold text-base mb-2 text-center">{product.price}</p>
                             <div className="flex gap-2 mb-4">
                                 <Link

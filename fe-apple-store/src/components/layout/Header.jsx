@@ -7,57 +7,9 @@ import CloseIcon from '@mui/icons-material/Close';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import { useAuthStore } from "../../stores/useAuthStore";
 import { usePageProductStore } from "../../stores/usePageProduct";
+import { useProductStore } from "../../stores/useProductStore";
 
-const menu = [
-    {
-        name: "iPhone",
-        link: "/iphone",
-        children: [
-            { name: "iPhone 15", link: "/iphone/15" },
-            { name: "iPhone 15 Plus", link: "/iphone/15plus" },
-            { name: "iPhone 15 Pro", link: "/iphone/15pro" },
-            { name: "iPhone 15 Pro Max", link: "/iphone/15promax" },
-        ],
-    },
-    {
-        name: "Mac",
-        link: "/mac",
-        children: [
-            { name: "MacBook Air", link: "/mac/air" },
-            { name: "MacBook Pro", link: "/mac/pro" },
-            { name: "iMac", link: "/mac/imac" },
-            { name: "Mac mini", link: "/mac/mini" },
-        ],
-    },
-    {
-        name: "AirPods",
-        link: "/airpods",
-        children: [
-            { name: "AirPods", link: "/airpods/airpods" },
-            { name: "AirPods Pro", link: "/airpods/airpods-pro" },
-            { name: "AirPods Max", link: "/airpods/airpods-max" },
-        ],
-    },
-    {
-        name: "iPad",
-        link: "/ipad",
-        children: [
-            { name: "iPad", link: "/ipad" },
-            { name: "iPad Air", link: "/ipad/air" },
-            { name: "iPad Pro", link: "/ipad/pro" },
-            { name: "iPad mini", link: "/ipad/mini" },
-        ],
-    },
-    {
-        name: "Watch",
-        link: "/watch",
-        children: [
-            { name: "Watch SE", link: "/watch/se" },
-            { name: "Watch Series 9", link: "/watch/series9" },
-            { name: "Watch Ultra 2", link: "/watch/ultra2" },
-        ],
-    },
-];
+
 
 const Header = ({ logoColor = "#000" }) => {
     const [openMenu, setOpenMenu] = useState(null);
@@ -65,6 +17,14 @@ const Header = ({ logoColor = "#000" }) => {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [mobileSubMenu, setMobileSubMenu] = useState(null);
     const { pageProducts, getPageProducts } = usePageProductStore();
+    const { getProducts, products, createProduct, loading, updateProduct, deleteProduct } = useProductStore();
+
+    useEffect(() => {
+        getProducts();
+    }, [getProducts]);
+
+    // console.log(products, 'products in header');
+
     useEffect(() => {
         getPageProducts();
     }, [getPageProducts]);
@@ -110,20 +70,23 @@ const Header = ({ logoColor = "#000" }) => {
                     <li>
                         <Link to="/" className="hover:text-blue-500 transition">Home</Link>
                     </li>
-                    {pageProducts.map((item, idx) => (
-                        <li
-                            key={item.name}
-                            className="relative"
-                            onMouseEnter={() => setOpenMenu(idx)}
-                            onMouseLeave={() => setOpenMenu(null)}
-                        >
-                            <Link to={item.slug} className="hover:text-blue-500 transition">{item.name}</Link>
-
-
-                        </li>
-                    ))}
+                    {[...pageProducts] // clone mảng để tránh mutate
+                        .sort((a, b) => a.name.localeCompare(b.name)) // sắp xếp theo tên A-Z
+                        .map((item, idx) => (
+                            <li
+                                key={item.name}
+                                className="relative"
+                                onMouseEnter={() => setOpenMenu(idx)}
+                                onMouseLeave={() => setOpenMenu(null)}
+                            >
+                                <Link to={item.slug} className="hover:text-blue-500 transition">
+                                    {item.name}
+                                </Link>
+                            </li>
+                        ))}
                 </ul>
             </nav>
+
 
             {/* Mobile Navigation */}
             {mobileMenuOpen && (
@@ -152,50 +115,45 @@ const Header = ({ logoColor = "#000" }) => {
                                 <CloseIcon style={{ fontSize: 28, color: logoColor }} />
                             </button>
                         </div>
-                        <ul className="py-2">
-                            <li>
-                                <Link
-                                    to="/"
-                                    className="block px-6 py-3 text-gray-700 hover:bg-gray-100 transition"
-                                    onClick={() => setMobileMenuOpen(false)}
-                                >
-                                    Home
-                                </Link>
-                            </li>
-                            {menu.map((item, idx) => (
-                                <li key={item.name} className="border-b border-gray-100">
-                                    <div
-                                        className="flex justify-between items-center px-6 py-3 text-gray-700 cursor-pointer"
-                                        onClick={() => setMobileSubMenu(mobileSubMenu === idx ? null : idx)}
-                                    >
-                                        <span>{item.name}</span>
-                                        <svg
-                                            className={`w-5 h-5 transform transition-transform ${mobileSubMenu === idx ? 'rotate-180' : ''}`}
-                                            fill="none"
-                                            stroke="currentColor"
-                                            viewBox="0 0 24 24"
-                                        >
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                                        </svg>
-                                    </div>
-                                    {item.children && mobileSubMenu === idx && (
-                                        <ul className="bg-gray-50">
-                                            {item.children.map((child) => (
-                                                <li key={child.name}>
-                                                    <Link
-                                                        to={child.link}
-                                                        className="block px-8 py-3 text-gray-600 hover:bg-gray-100 transition"
-                                                        onClick={() => setMobileMenuOpen(false)}
-                                                    >
-                                                        {child.name}
-                                                    </Link>
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    )}
+                        {/* Desktop Navigation */}
+                        <nav className="hidden lg:block">
+                            <ul className="flex gap-6 xl:gap-8 font-bold text-sm xl:text-base text-gray-400 relative">
+                                <li>
+                                    <Link to="/" className="hover:text-blue-500 transition">Home</Link>
                                 </li>
-                            ))}
-                        </ul>
+
+                                {/* Categories */}
+                                {[...new Set(products.map((p) => p.category))].map((cat, idx) => (
+                                    <li
+                                        key={cat}
+                                        className="relative"
+                                        onMouseEnter={() => setOpenMenu(idx)}
+                                        onMouseLeave={() => setOpenMenu(null)}
+                                    >
+                                        <button className="hover:text-blue-500 transition">{cat}</button>
+
+                                        {/* Dropdown: products by category */}
+                                        {openMenu === idx && (
+                                            <ul className="absolute left-0 mt-2 bg-white shadow-lg rounded-lg w-56 py-2 z-50">
+                                                {products
+                                                    .filter((p) => p.category === cat)
+                                                    .map((prod) => (
+                                                        <li key={prod._id}>
+                                                            <Link
+                                                                to={`/products/${prod._id}`}
+                                                                className="block px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-blue-500 transition"
+                                                            >
+                                                                {prod.name}
+                                                            </Link>
+                                                        </li>
+                                                    ))}
+                                            </ul>
+                                        )}
+                                    </li>
+                                ))}
+                            </ul>
+                        </nav>
+
                     </div>
                 </div>
             )}

@@ -8,6 +8,7 @@ import { UsersModule } from './users/users.module';
 import { ProductsModule } from './products/products.module';
 import { PagesModule } from './page-home/page.module';
 import { PageProductsModule } from './page-prodcuts/page-products.module';
+import { UploadModule } from './upload/upload.module';
 
 @Module({
   imports: [
@@ -22,7 +23,8 @@ import { PageProductsModule } from './page-prodcuts/page-products.module';
     UsersModule,
     ProductsModule,
     PagesModule,
-    PageProductsModule // Ensure ProductsModule is imported here
+    PageProductsModule,
+    UploadModule // Ensure ProductsModule is imported here
   ],
   controllers: [AppController],
   providers: [AppService],

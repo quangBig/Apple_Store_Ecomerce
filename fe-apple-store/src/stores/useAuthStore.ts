@@ -44,19 +44,29 @@ export const useAuthStore = create<AuthState, [['zustand/persist', AuthState]]>(
                 try {
                     const res = await axios.post("/auth/login", { email, password });
                     const { access_token } = res.data;
-                    set({ token: access_token });
-                    // Lấy profile
-                    const profileRes = await axios.get("/auth/profile", {
-                        headers: { Authorization: `Bearer ${access_token}` }
-                    });
-                    set({ user: profileRes.data, loading: false });
-                    toast.success("Đăng nhập thành công")
 
+                    // Lưu token vào store
+                    set({ token: access_token });
+
+                    // Gọi profile - axios interceptor sẽ tự động thêm token
+                    const profileRes = await axios.get("/auth/profile");
+
+                    set({
+                        user: profileRes.data,
+                        loading: false
+                    });
+
+                    toast.success("Đăng nhập thành công");
                 } catch (error: any) {
-                    set({ loading: false });
+                    console.error("Login error:", error?.response?.data || error.message);
+                    set({ loading: false, user: null, token: null });
+
+                    const errorMsg = error?.response?.data?.message || "Đăng nhập thất bại";
+                    toast.error(errorMsg);
                     throw error;
                 }
             },
+
             register: async (data) => {
                 set({ loading: true });
                 try {
@@ -82,18 +92,23 @@ export const useAuthStore = create<AuthState, [['zustand/persist', AuthState]]>(
             },
             checkAuth: async () => {
                 set({ checkingAuth: true });
-                const token = get().token;
+                const { token } = get();
+
+                console.log("Token in checkAuth:", token); // Debug
+
                 if (!token) {
+                    console.log("No token found"); // Debug
                     set({ user: null, checkingAuth: false });
                     return;
                 }
+
                 try {
-                    const response = await axios.get("/auth/profile", {
-                        headers: { Authorization: `Bearer ${token}` }
-                    });
+                    console.log("Sending request to /auth/profile with token"); // Debug
+                    const response = await axios.get("/auth/profile");
                     set({ user: response.data, checkingAuth: false });
                 } catch (error) {
-                    set({ user: null, checkingAuth: false });
+                    console.error("Check auth error:", error);
+                    set({ user: null, token: null, checkingAuth: false });
                 }
             },
             loginWithGoogle: async (token: string) => {

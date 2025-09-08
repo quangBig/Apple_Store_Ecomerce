@@ -11,6 +11,7 @@ import { usePageStore } from "../stores/usePageStore";
 import ProductCarousel from "../components/product/ProductCarousel";
 import Card from "@mui/material/Card";
 import CardShelfCarousel from "../components/common/CardShelfCarousel.JSX";
+import PageRenderer from "./section/Render";
 
 
 const products = [
@@ -63,15 +64,10 @@ const HomePage = () => {
 
             <ProductCarousel />
             <HeroSection />
-            <CardShelfCarousel />
-            <div className="text-3xl font-semibold ml-20 mt-10 whitespace-pre-line">
-                <h1>
-                    Dòng sản phẩm
-                </h1>
-            </div>
-            {pages.map((p, idx) => (
-                <ProductSection key={p.title} {...p} aosDelay={idx * 150} />
-            ))}
+
+            <PageRenderer pages={pages} />
+
+
             <ContactSection />
             <AboutSection />
             <Footer />

@@ -21,6 +21,7 @@ const LoginPage = () => {
     const loading = useAuthStore((state) => state.loading);
     const navigate = useNavigate();
 
+    console.log(loading, "loading");
     // Initialize AOS
     useEffect(() => {
         AOS.init({

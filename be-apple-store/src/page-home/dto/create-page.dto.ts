@@ -1,3 +1,4 @@
+// create-page.dto.ts
 import { IsString, IsOptional, IsBoolean, IsNumber } from 'class-validator';
 
 export class CreatePageDto {
@@ -6,7 +7,7 @@ export class CreatePageDto {
 
     @IsOptional()
     @IsString()
-    desc?: string;
+    decs?: string;
 
     @IsOptional()
     @IsString()
@@ -17,10 +18,22 @@ export class CreatePageDto {
     link?: string;
 
     @IsOptional()
+    @IsString()
+    price?: string;
+
+
+    @IsOptional()
     @IsBoolean()
     reverse?: boolean;
 
     @IsOptional()
     @IsNumber()
     position?: number;
+
+    @IsString()
+    section: string; // bắt buộc
+
+    @IsOptional()
+    @IsString()
+    bannerTitle?: string;
 }

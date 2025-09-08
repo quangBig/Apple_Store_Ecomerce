@@ -1,8 +1,10 @@
-import React from "react";
+import React, { useMemo } from "react";
 import PaymentIcon from '@mui/icons-material/Payment';
 import SchoolIcon from '@mui/icons-material/School';
 import SettingsSuggestIcon from '@mui/icons-material/SettingsSuggest';
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';
+import { usePageProductStore } from "../../stores/usePageProduct";
+import { useParams } from "react-router-dom";
 
 const reasons = [
     {
@@ -32,37 +34,48 @@ const reasons = [
     },
 ];
 
-const WhyAppleSection = () => (
+const WhyAppleSection = () => {
 
-    <div className="w-full py-16 bg-gray-50">
-        <div className="text-3xl font-semibold ml-20 mt-10 whitespace-pre-line">
-            <h1>
-                Vì sao Apple Store là nơi tốt nhất để mua sản phẩm Apple
-            </h1>
-        </div>
-        <div className="max-w-7xl mx-auto px-4 mt-10">
+    const { pageProducts, loading } = usePageProductStore();
+    const { slug } = useParams();
+    const product = useMemo(
+        () =>
+            pageProducts.find(
+                (p) => p.slug.replace(/^\//, "") === slug?.replace(/^\//, "")
+            ),
+        [pageProducts, slug]
+    );
+    return (
+        <div className="w-full py-16 bg-gray-50">
+            <div className="text-3xl font-semibold ml-20 mt-10 whitespace-pre-line">
+                <h1>
+                    Vì sao Apple Store là nơi tốt nhất để mua sản phẩm {product.name}
+                </h1>
+            </div>
+            <div className="max-w-7xl mx-auto px-4 mt-10">
 
 
-            <div className=" pb-4">
-                <ul className="flex md:grid md:grid-cols-4 gap-6 min-w-[700px] md:min-w-0">
-                    {reasons.map((item, idx) => (
-                        <li key={idx} className="flex-shrink-0 w-72 md:w-auto bg-white rounded-2xl shadow-xl p-6 flex flex-col items-center text-center transition-transform duration-300 hover:scale-105">
-                            <div className="h-14 mb-4 flex items-center justify-center">
-                                {typeof item.icon === 'string' ? (
-                                    <img src={item.icon} alt="" className="h-14" />
-                                ) : (
-                                    item.icon
-                                )}
-                            </div>
-                            <h3 className="font-bold text-lg mb-2">{item.title}</h3>
-                            <p className="text-gray-500 mb-4 text-sm">{item.desc}</p>
+                <div className=" pb-4">
+                    <ul className="flex md:grid md:grid-cols-4 gap-6 min-w-[700px] md:min-w-0">
+                        {reasons.map((item, idx) => (
+                            <li key={idx} className="flex-shrink-0 w-72 md:w-auto bg-white rounded-2xl shadow-xl p-6 flex flex-col items-center text-center transition-transform duration-300 hover:scale-105">
+                                <div className="h-14 mb-4 flex items-center justify-center">
+                                    {typeof item.icon === 'string' ? (
+                                        <img src={item.icon} alt="" className="h-14" />
+                                    ) : (
+                                        item.icon
+                                    )}
+                                </div>
+                                <h3 className="font-bold text-lg mb-2">{item.title}</h3>
+                                <p className="text-gray-500 mb-4 text-sm">{item.desc}</p>
 
-                        </li>
-                    ))}
-                </ul>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
             </div>
         </div>
-    </div>
-);
+    )
+};
 
 export default WhyAppleSection; 
