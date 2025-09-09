@@ -2,20 +2,22 @@
     "version": 2,
     "builds": [
         {
-            "src": "src/main.ts",
+            "src": "dist/main.js", // Trỏ đến file JS ĐÃ BUILD
             "use": "@vercel/node"
         }
     ],
     "routes": [
         {
-            "src": "/(.*)",
-            "dest": "src/main.ts",
+            "src": "/(.*)", // Bắt tất cả các route
+            "dest": "/dist/main.js", // Trỏ đến file handler ĐÃ BUILD
             "methods": [
                 "GET",
                 "POST",
                 "PUT",
                 "PATCH",
-                "DELETE"
+                "DELETE",
+                "OPTIONS",
+                "HEAD"
             ]
         }
     ]
