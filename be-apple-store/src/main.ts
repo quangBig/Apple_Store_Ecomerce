@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { json, urlencoded } from 'express';
-import * as express from 'express';
+import express from 'express';
 import { join } from 'path';
 import serverless from 'serverless-http';
 import { ExpressAdapter } from '@nestjs/platform-express';
