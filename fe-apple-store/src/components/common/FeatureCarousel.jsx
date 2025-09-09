@@ -17,6 +17,7 @@ const FeatureCarousel = () => {
     console.log(product, "asd")
 
     const features = product?.bannerContent || [];
+    if (!features.length) return null;
     const [openIndex, setOpenIndex] = useState(null);
 
 

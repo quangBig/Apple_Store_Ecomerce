@@ -41,8 +41,9 @@ const ProductPages = () => {
             />
             {/* <VideoProduct /> */}
             <FeatureCarousel />
-            <WhyAppleSection />
             <ProductConnect />
+            <WhyAppleSection />
+
             <ProductDetailComparison products={similarProducts} />
             <Footer />
         </>
