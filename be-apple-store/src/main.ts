@@ -11,18 +11,11 @@ dotenv.config();
 const server = express();
 
 async function bootstrap() {
-  const app = await NestFactory.create(
-    AppModule,
-    new ExpressAdapter(server)
-  );
+  const app = await NestFactory.create(AppModule, new ExpressAdapter(server));
 
   app.use(json({ limit: '50mb' }));
   app.use(urlencoded({ extended: true, limit: '50mb' }));
-
-  app.enableCors({
-    origin: '*', // cho phép tất cả, hoặc thay bằng domain của bạn
-    credentials: true,
-  });
+  app.enableCors({ origin: '*', credentials: true });
 
   await app.init();
 }
