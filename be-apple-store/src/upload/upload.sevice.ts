@@ -12,7 +12,7 @@ cloudinary.config({
 export class UploadService {
     async uploadFile(file: Express.Multer.File) {
         return new Promise((resolve, reject) => {
-            const uploadStream = cloudinary.uploader.upload_stream(
+            const stream = cloudinary.uploader.upload_stream(
                 { folder: 'uploads' },
                 (error, result) => {
                     if (error) return reject(error);
@@ -25,7 +25,7 @@ export class UploadService {
             readable.push(file.buffer);
             readable.push(null);
 
-            readable.pipe(uploadStream);
+            readable.pipe(stream);
         });
     }
 }

@@ -65,8 +65,7 @@ export class PagesService {
             await this.pageModel.bulkWrite(bulkOps);
             return this.findAll();
         } catch (error) {
-            console.error("🔥 Reorder error:", error.message);
-            throw new Error("Reorder failed: " + error.message);
+            console.error("🔥 Reorder error:")
         }
     }
     async findBySection(section: string): Promise<Page[]> {
