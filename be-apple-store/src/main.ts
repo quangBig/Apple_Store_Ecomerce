@@ -25,7 +25,7 @@ async function bootstrap() {
   });
 
   // Static uploads
-  app.use('/uploads', express.static(join(__dirname, '..', 'uploads')));
+  // app.use('/uploads', express.static(join(__dirname, '..', 'uploads')));
 
   await app.init(); // Không listen trực tiếp
 }
