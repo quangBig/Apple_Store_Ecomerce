@@ -5,8 +5,8 @@ import { usePageProductStore } from "../../stores/usePageProduct";
 const FeatureCarousel = () => {
     const { slug } = useParams();
     const { pageProducts, loading } = usePageProductStore();
+    const [openIndex, setOpenIndex] = useState(null);
 
-    // console.log(pageProducts, "asd")
     const product = useMemo(
         () =>
             pageProducts.find(
@@ -14,30 +14,33 @@ const FeatureCarousel = () => {
             ),
         [pageProducts, slug]
     );
-    console.log(product, "asd")
+
+    // Nếu chưa có dữ liệu → không render
+    if (loading || !product) {
+        return (
+            <div className="w-full py-12 flex justify-center items-center">
+                <p className="text-gray-500">Đang tải dữ liệu...</p>
+            </div>
+        );
+    }
 
     const features = product?.bannerContent || [];
     if (!features.length) return null;
-    const [openIndex, setOpenIndex] = useState(null);
-
 
 
     return (
         <div className="w-full py-12 flex flex-col justify-center gap-6 flex-wrap">
             <div className="text-3xl font-semibold ml-20 mt-10 whitespace-pre-line">
-                <h1>
-                    Tìm hiểu về {product.name}
-                </h1>
+                <h1>Tìm hiểu về {product.name}</h1>
             </div>
-            <div className="flex gap-3 ml-80">
-                {features.map((feature, index) => (
 
+            <div className="flex gap-3 ml-80 flex-wrap">
+                {features.map((feature, index) => (
                     <div
                         key={index}
                         className="relative flex-shrink-0 w-80 h-[550px] rounded-3xl overflow-hidden shadow-lg"
                     >
                         {/* Background image */}
-
                         <div
                             className="absolute inset-0 bg-black"
                             style={{
@@ -47,36 +50,25 @@ const FeatureCarousel = () => {
                             }}
                         />
 
-                        {/* Overlay đen nhẹ để dễ đọc chữ */}
+                        {/* Overlay đen nhẹ */}
                         <div className="absolute inset-0 bg-black/50" />
 
-                        {/* Nội dung chính */}
+                        {/* Nội dung */}
                         <div className="relative z-10 p-6 flex flex-col h-full justify-between text-white">
                             <div>
                                 {feature.subtitle && (
-                                    <div
-                                        className="text-sm font-semibold mb-2 opacity-90 text-white"
-                                        style={{
-                                            textShadow:
-                                                "3px 3px 0 #000, -3px -3px 0 #000, 3px -3px 0 #000, -3px 3px 0 #000, 3px 0 0 #000, 0 3px 0 #000, -3px 0 0 #000, 0 -3px 0 #000",
-                                        }}
-                                    >
+                                    <div className="text-sm font-semibold mb-2 opacity-90 text-white"
+                                        style={{ textShadow: "2px 2px 4px #000" }}>
                                         {feature.subtitle}
                                     </div>
                                 )}
                                 {feature.title && (
-                                    <div
-                                        className="text-xl font-bold mb-3 leading-snug text-white"
-                                        style={{
-                                            textShadow:
-                                                "3px 3px 0 #000, -3px -3px 0 #000, 3px -3px 0 #000, -3px 3px 0 #000, 3px 0 0 #000, 0 3px 0 #000, -3px 0 0 #000, 0 -3px 0 #000",
-                                        }}
-                                    >
+                                    <div className="text-xl font-bold mb-3 leading-snug text-white"
+                                        style={{ textShadow: "2px 2px 4px #000" }}>
                                         {feature.title}
                                     </div>
                                 )}
                             </div>
-
 
                             {/* Nút + */}
                             <div className="flex ml-56 mt-6">
@@ -89,24 +81,19 @@ const FeatureCarousel = () => {
                             </div>
                         </div>
 
-
                         {/* Overlay chi tiết */}
                         {openIndex === index && (
-                            <div className="absolute inset-0 bg-gray-300 p-6 flex flex-col justify-center items-center text-center text-black  transition-all duration-300">
-
-                                <p className="text-sm opacity-90 leading-relaxed">
-                                    {feature.description && (
-                                        <div className="text-base font-bold opacity-90 leading-relaxed">
-                                            {feature.description}
-                                        </div>
-                                    )}
-                                </p>
+                            <div className="absolute inset-0 bg-gray-300 p-6 flex flex-col justify-center items-center text-center text-black transition-all duration-300">
+                                {feature.description && (
+                                    <div className="text-base font-bold opacity-90 leading-relaxed">
+                                        {feature.description}
+                                    </div>
+                                )}
                             </div>
                         )}
                     </div>
                 ))}
             </div>
-
         </div>
     );
 };

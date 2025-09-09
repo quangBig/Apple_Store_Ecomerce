@@ -28,6 +28,7 @@
     "@nestjs/mongoose": "^11.0.3",
     "@nestjs/passport": "^11.0.5",
     "@nestjs/platform-express": "^11.1.5",
+    "@vendia/serverless-express": "^4.12.6",
     "bcryptjs": "^3.0.2",
     "buffer-to-stream": "^1.0.0",
     "class-transformer": "^0.5.1",
