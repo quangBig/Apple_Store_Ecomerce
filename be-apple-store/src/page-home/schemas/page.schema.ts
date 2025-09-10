@@ -20,8 +20,6 @@ export class Page {
     @Prop()
     price: string;
 
-
-
     @Prop({ default: false })
     reverse: boolean;
 

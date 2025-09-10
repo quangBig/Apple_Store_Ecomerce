@@ -20,17 +20,23 @@ class ProductColorDto {
 
     @IsOptional()
     @IsString()
-    price?: string;
+    price?: string;  // Giá gốc
+
+    @IsOptional()
+    @IsString()
+    discountedPrice?: string; // ✅ Giá sau khi giảm
 }
 
 class ProductVariantDto {
-
-
     @IsString()
     name: string;
 
     @IsString()
-    price: string;
+    price: string; // Giá gốc
+
+    @IsOptional()
+    @IsString()
+    discountedPrice?: string; // ✅ Giá sau khi giảm
 
     @IsOptional()
     @IsString()
@@ -43,7 +49,6 @@ class ProductVariantDto {
 }
 
 export class CreateProductDto {
-
     @IsString()
     @IsNotEmpty()
     name: string;

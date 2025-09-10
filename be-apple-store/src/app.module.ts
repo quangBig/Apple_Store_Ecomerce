@@ -8,9 +8,7 @@ import { UsersModule } from './users/users.module';
 import { ProductsModule } from './products/products.module';
 import { PagesModule } from './page-home/page.module';
 import { PageProductsModule } from './page-prodcuts/page-products.module';
-import { UploadController } from './upload/upload.controller';
-import { UploadService } from './upload/upload.sevice';
-
+import { UploadModule } from './upload/upload.module';
 
 @Module({
   imports: [
@@ -26,9 +24,9 @@ import { UploadService } from './upload/upload.sevice';
     ProductsModule,
     PagesModule,
     PageProductsModule,
-    // Ensure ProductsModule is imported here
+    UploadModule // Ensure ProductsModule is imported here
   ],
-  controllers: [AppController, UploadController],
-  providers: [AppService, UploadService],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule { }

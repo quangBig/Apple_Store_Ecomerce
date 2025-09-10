@@ -22,9 +22,9 @@ export class Product {
 
     @Prop([
         {
-
             name: { type: String, required: true },
-            price: { type: String, required: true },
+            price: { type: String, required: true }, // Giá gốc
+            discountedPrice: { type: String },       // ✅ Giá sau khi giảm
             config: { type: String },
             colors: [
                 {
@@ -32,7 +32,8 @@ export class Product {
                     value: { type: String },
                     hex: { type: String },
                     image: { type: String },
-                    price: { type: String }
+                    price: { type: String },          // Giá gốc của màu
+                    discountedPrice: { type: String } // ✅ Giá sau khi giảm của màu
                 }
             ]
         }
@@ -40,6 +41,7 @@ export class Product {
     variants: {
         name: string;
         price: string;
+        discountedPrice?: string;
         config: string;
         colors: {
             name: string;
@@ -47,6 +49,7 @@ export class Product {
             hex: string;
             image: string;
             price: string;
+            discountedPrice?: string;
         }[];
     }[];
 }

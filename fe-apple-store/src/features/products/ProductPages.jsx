@@ -12,19 +12,24 @@ const ProductPages = () => {
     const { slug } = useParams();
     const { products } = useProductStore();
 
-    // tìm product theo slug
-    const productBySlug = products.find((p) => p.category.toLowerCase() === slug.toLowerCase());
+    // tìm product theo slug (ở đây bạn so sánh category với slug như trước)
+    const productBySlug = products.find((p) => p.category?.toLowerCase() === slug?.toLowerCase());
 
     if (!productBySlug) {
         return <h2 className="text-center mt-20">Không tìm thấy sản phẩm cho "{slug}"</h2>;
     }
 
+    // bảo vệ nếu không có variants hoặc colors
+    const firstVariant = (productBySlug.variants && productBySlug.variants[0]) || { colors: [] };
+
     // map variants.colors thành "products" cho DeviceShowcase
-    const showcaseProducts = productBySlug.variants[0].colors.map((c) => ({
+    const showcaseProducts = firstVariant.colors.map((c) => ({
         name: c.name,
         color: c.hex,
         image: c.image,
-
+        // thêm productId (hoặc productSlug nếu bạn dùng slug route)
+        productId: productBySlug._id,
+        // nếu bạn muốn dùng slug: productSlug: productBySlug.slug,
         text: "text-black",
         btn: "border-black text-black hover:bg-black hover:text-white",
         desc: productBySlug.description,
@@ -43,7 +48,6 @@ const ProductPages = () => {
             <FeatureCarousel />
             <ProductConnect />
             <WhyAppleSection />
-
             <ProductDetailComparison products={similarProducts} />
             <Footer />
         </>
