@@ -31,7 +31,6 @@ const OtherProducts = () => {
                         <ProductCard
                             image={p.image}
                             name={p.title}
-
                             link={p.link}
                         />
                     </div>
