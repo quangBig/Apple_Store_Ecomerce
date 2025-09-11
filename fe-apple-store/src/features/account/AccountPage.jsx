@@ -20,7 +20,7 @@ export default function AccountPage() {
             <Header />
             <div className="flex bg-[#fafafa] min-h-screen text-black">
                 <OrderSidebar />
-                <div className="flex-1 p-8">
+                <div className="flex-1 p-8 mt-20">
                     <h1 className="text-2xl font-bold mb-6">Hồ Sơ Của Tôi</h1>
                     <AccountInfo user={MOCK_USER} onEdit={() => alert('Sửa thông tin!')} />
                 </div>

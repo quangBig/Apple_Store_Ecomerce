@@ -1,17 +1,21 @@
 import React, { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import AOS from "aos";
 import "aos/dist/aos.css";
+import { toast } from "react-toastify";
 
 import Header from "../../components/layout/Header";
 import Footer from "../../components/layout/Footer";
 import OtherProducts from "../../components/sections/OtherProducts";
 import { useProductStore } from "../../stores/useProductStore";
+import { useAuthStore } from "../../stores/useAuthStore";
 import PromotionBox from "./components/offers";
 
 const ProductDetailPage = () => {
     const { productId } = useParams();
     const { products } = useProductStore();
+    const { user } = useAuthStore();
+    const navigate = useNavigate();
 
     const [selectedImage, setSelectedImage] = useState(0);
     const [selectedVariant, setSelectedVariant] = useState(0);
@@ -51,7 +55,6 @@ const ProductDetailPage = () => {
     // helpers
     const parsePrice = (raw) => {
         if (raw === null || raw === undefined) return 0;
-        // accept numbers or strings like "30.000.000" or "30000000"
         const s = String(raw).replace(/[^\d.-]/g, "");
         return Number(s) || 0;
     };
@@ -62,9 +65,7 @@ const ProductDetailPage = () => {
     const variant = product.variants?.[selectedVariant];
     const color = variant?.colors?.[selectedColor];
 
-    // Determine display price and discount info
     const getPriceInfo = () => {
-        // prefer color price then variant price then product.price
         const colorPrice = color ? parsePrice(color.price) : 0;
         const variantPrice = variant ? parsePrice(variant.price) : 0;
         const basePrice = colorPrice || variantPrice || parsePrice(product.price) || 0;
@@ -72,9 +73,6 @@ const ProductDetailPage = () => {
         const colorDiscounted = color ? Number(color.discountedPrice) || 0 : 0;
         const variantDiscounted = variant ? Number(variant.discountedPrice) || 0 : 0;
 
-        const discounted = colorDiscounted || variantDiscounted || 0;
-
-        // choose which discount to show: color discount if exists, else variant
         if (color && colorDiscounted && colorDiscounted < colorPrice) {
             return {
                 original: colorPrice,
@@ -103,9 +101,32 @@ const ProductDetailPage = () => {
     const priceInfo = getPriceInfo();
 
     const handleAddToCart = () => {
-        alert(
+        if (!user) {
+            toast.warning("Bạn cần đăng nhập trước khi thêm vào giỏ hàng!");
+            navigate("/login");
+            return;
+        }
+
+        toast.success(
             `Đã thêm ${quantity} x ${product.name} (${variant?.name || "—"}, ${color?.name || "—"}) vào giỏ hàng!`
         );
+    };
+
+    const handleBuyNow = () => {
+        if (!user) {
+            toast.warning("Bạn cần đăng nhập trước khi mua hàng!");
+            navigate("/login");
+            return;
+        }
+
+        navigate("/checkout", {
+            state: {
+                productId: product._id,
+                quantity,
+                variant: variant?._id,
+                color: color?.value,
+            },
+        });
     };
 
     return (
@@ -113,7 +134,7 @@ const ProductDetailPage = () => {
             <Header />
 
             {/* Breadcrumb */}
-            <div className="max-w-7xl mx-auto px-4 py-4" data-aos="fade-down">
+            <div className="max-w-7xl mx-auto px-4 py-4 mt-20" data-aos="fade-down">
                 <nav className="flex" aria-label="Breadcrumb">
                     <ol className="inline-flex items-center space-x-1 md:space-x-3">
                         <li className="inline-flex items-center">
@@ -160,7 +181,9 @@ const ProductDetailPage = () => {
                                 <button
                                     key={index}
                                     onClick={() => setSelectedImage(index)}
-                                    className={`w-20 h-20 rounded-lg overflow-hidden border-2 transition-all duration-300 hover:scale-110 ${selectedImage === index ? "border-blue-500 shadow-lg" : "border-gray-200 hover:border-gray-300"
+                                    className={`w-20 h-20 rounded-lg overflow-hidden border-2 transition-all duration-300 hover:scale-110 ${selectedImage === index
+                                            ? "border-blue-500 shadow-lg"
+                                            : "border-gray-200 hover:border-gray-300"
                                         }`}
                                 >
                                     <img src={image} alt={`${product.name} ${index + 1}`} className="w-full h-full object-cover" />
@@ -177,15 +200,21 @@ const ProductDetailPage = () => {
                                 {priceInfo.discounted ? (
                                     <>
                                         <div className="flex items-baseline gap-3">
-                                            <span className="text-sm text-gray-500 line-through">{formatPrice(priceInfo.original)}₫</span>
-                                            <span className="text-3xl font-bold text-red-600">{formatPrice(priceInfo.discounted)}₫</span>
+                                            <span className="text-sm text-gray-500 line-through">
+                                                {formatPrice(priceInfo.original)}₫
+                                            </span>
+                                            <span className="text-3xl font-bold text-red-600">
+                                                {formatPrice(priceInfo.discounted)}₫
+                                            </span>
                                         </div>
                                         <div className="ml-2 px-2 py-1 bg-red-100 text-red-600 rounded text-sm font-semibold">
                                             -{priceInfo.percent}%
                                         </div>
                                     </>
                                 ) : (
-                                    <span className="text-3xl font-bold text-green-600">{formatPrice(priceInfo.original)}₫</span>
+                                    <span className="text-3xl font-bold text-green-600">
+                                        {formatPrice(priceInfo.original)}₫
+                                    </span>
                                 )}
                             </div>
                         </div>
@@ -200,7 +229,10 @@ const ProductDetailPage = () => {
                                         const vDiscounted = Number(v.discountedPrice) || 0;
                                         const showVariantDiscount = vDiscounted && vDiscounted < vPrice;
                                         const vPercent =
-                                            v.discountPercent ?? (vPrice && vDiscounted ? Math.round(((vPrice - vDiscounted) / vPrice) * 100) : 0);
+                                            v.discountPercent ??
+                                            (vPrice && vDiscounted
+                                                ? Math.round(((vPrice - vDiscounted) / vPrice) * 100)
+                                                : 0);
 
                                         return (
                                             <button
@@ -209,7 +241,9 @@ const ProductDetailPage = () => {
                                                     setSelectedVariant(idx);
                                                     setSelectedColor(0);
                                                 }}
-                                                className={`block border-2 rounded-lg p-3 min-w-[180px] text-left transition-all duration-300 ${selectedVariant === idx ? "border-red-500 bg-red-50" : "border-gray-200 hover:border-gray-300"
+                                                className={`block border-2 rounded-lg p-3 min-w-[180px] text-left transition-all duration-300 ${selectedVariant === idx
+                                                        ? "border-red-500 bg-red-50"
+                                                        : "border-gray-200 hover:border-gray-300"
                                                     }`}
                                             >
                                                 <div className="font-semibold mb-1">{v.name}</div>
@@ -217,9 +251,15 @@ const ProductDetailPage = () => {
                                                 <div className="text-sm font-bold">
                                                     {showVariantDiscount ? (
                                                         <span className="flex items-baseline gap-2">
-                                                            <span className="text-sm line-through text-gray-500">{formatPrice(vPrice)}₫</span>
-                                                            <span className="text-base text-red-600">{formatPrice(vDiscounted)}₫</span>
-                                                            <span className="ml-2 text-xs text-red-600">-{vPercent}%</span>
+                                                            <span className="text-sm line-through text-gray-500">
+                                                                {formatPrice(vPrice)}₫
+                                                            </span>
+                                                            <span className="text-base text-red-600">
+                                                                {formatPrice(vDiscounted)}₫
+                                                            </span>
+                                                            <span className="ml-2 text-xs text-red-600">
+                                                                -{vPercent}%
+                                                            </span>
                                                         </span>
                                                     ) : (
                                                         <span>{formatPrice(vPrice)}₫</span>
@@ -242,13 +282,18 @@ const ProductDetailPage = () => {
                                         const cDiscounted = Number(c.discountedPrice) || 0;
                                         const showColorDiscount = cDiscounted && cDiscounted < cPrice;
                                         const cPercent =
-                                            c.discountPercent ?? (cPrice && cDiscounted ? Math.round(((cPrice - cDiscounted) / cPrice) * 100) : 0);
+                                            c.discountPercent ??
+                                            (cPrice && cDiscounted
+                                                ? Math.round(((cPrice - cDiscounted) / cPrice) * 100)
+                                                : 0);
 
                                         return (
                                             <button
                                                 key={c.value || idx}
                                                 onClick={() => setSelectedColor(idx)}
-                                                className={`flex flex-col items-center border-2 rounded-lg p-3 min-w-[120px] transition-all duration-300 ${selectedColor === idx ? "border-red-500 bg-red-50" : "border-gray-200 hover:border-gray-300"
+                                                className={`flex flex-col items-center border-2 rounded-lg p-3 min-w-[120px] transition-all duration-300 ${selectedColor === idx
+                                                        ? "border-red-500 bg-red-50"
+                                                        : "border-gray-200 hover:border-gray-300"
                                                     }`}
                                             >
                                                 <img src={c.image} alt={c.name} className="w-10 h-10 mb-2 rounded" />
@@ -256,9 +301,15 @@ const ProductDetailPage = () => {
                                                 <span className="text-xs">
                                                     {showColorDiscount ? (
                                                         <span className="flex items-baseline gap-2">
-                                                            <span className="text-xs line-through text-gray-500">{formatPrice(cPrice)}₫</span>
-                                                            <span className="text-sm text-red-600">{formatPrice(cDiscounted)}₫</span>
-                                                            <span className="ml-1 text-xs text-red-600">-{cPercent}%</span>
+                                                            <span className="text-xs line-through text-gray-500">
+                                                                {formatPrice(cPrice)}₫
+                                                            </span>
+                                                            <span className="text-sm text-red-600">
+                                                                {formatPrice(cDiscounted)}₫
+                                                            </span>
+                                                            <span className="ml-1 text-xs text-red-600">
+                                                                -{cPercent}%
+                                                            </span>
                                                         </span>
                                                     ) : (
                                                         <span>{formatPrice(cPrice)}₫</span>
@@ -276,11 +327,17 @@ const ProductDetailPage = () => {
                             <div className="flex items-center space-x-4">
                                 <label className="font-medium">Số lượng:</label>
                                 <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden shadow-sm">
-                                    <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="px-3 py-2 hover:bg-gray-100 transition-colors duration-200 font-bold">
+                                    <button
+                                        onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                                        className="px-3 py-2 hover:bg-gray-100 transition-colors duration-200 font-bold"
+                                    >
                                         -
                                     </button>
                                     <span className="px-4 py-2 border-x border-gray-300 bg-white font-medium">{quantity}</span>
-                                    <button onClick={() => setQuantity(quantity + 1)} className="px-3 py-2 hover:bg-gray-100 transition-colors duration-200 font-bold">
+                                    <button
+                                        onClick={() => setQuantity(quantity + 1)}
+                                        className="px-3 py-2 hover:bg-gray-100 transition-colors duration-200 font-bold"
+                                    >
                                         +
                                     </button>
                                 </div>
@@ -293,7 +350,10 @@ const ProductDetailPage = () => {
                                 >
                                     Thêm vào giỏ hàng
                                 </button>
-                                <button className="flex-1 bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition-all duration-300 transform hover:scale-105 font-medium shadow-lg hover:shadow-xl">
+                                <button
+                                    onClick={handleBuyNow}
+                                    className="flex-1 bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition-all duration-300 transform hover:scale-105 font-medium shadow-lg hover:shadow-xl"
+                                >
                                     Mua ngay
                                 </button>
                             </div>
@@ -308,7 +368,9 @@ const ProductDetailPage = () => {
                                 <div className="bg-gradient-to-br from-pink-200 to-orange-100 rounded-xl p-6 shadow-md">
                                     <ul className="list-disc pl-6 text-gray-700 space-y-2">
                                         {product?.Outstandingfeatures ? (
-                                            product.Outstandingfeatures.split(",").map((feature, index) => <li key={index}>{feature.trim()}</li>)
+                                            product.Outstandingfeatures.split(",").map((feature, index) => (
+                                                <li key={index}>{feature.trim()}</li>
+                                            ))
                                         ) : (
                                             <li>Đang tải tính năng...</li>
                                         )}

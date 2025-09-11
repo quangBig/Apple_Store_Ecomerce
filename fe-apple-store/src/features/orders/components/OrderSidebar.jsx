@@ -8,7 +8,7 @@ const MENU = [
 export default function OrderSidebar() {
     const location = useLocation();
     return (
-        <aside className="w-64 bg-white border-r min-h-screen p-6">
+        <aside className="w-64 bg-white border-r min-h-screen p-6 mt-20">
             <div className="flex items-center gap-3 mb-8">
                 <img src="/avatar.png" className="w-14 h-14 rounded-full" alt="avatar" />
                 <div>

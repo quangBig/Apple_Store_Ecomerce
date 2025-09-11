@@ -9,6 +9,7 @@ import { ProductsModule } from './products/products.module';
 import { PagesModule } from './page-home/page.module';
 import { PageProductsModule } from './page-prodcuts/page-products.module';
 import { UploadModule } from './upload/upload.module';
+import { CloudinaryModule } from './products/cloudinary/cloudinary.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { UploadModule } from './upload/upload.module';
     ProductsModule,
     PagesModule,
     PageProductsModule,
+    CloudinaryModule,
     UploadModule // Ensure ProductsModule is imported here
   ],
   controllers: [AppController],

@@ -11,7 +11,7 @@ export default function ProductCarousel() {
 
     return (
         <div data-aos="fade-up" className="relative w-full">
-            <div className="text-3xl font-semibold ml-20 mt-10 whitespace-pre-line">
+            <div className="text-3xl font-semibold ml-20 mt-20 whitespace-pre-line">
                 <h1>
                     Cửa Hàng. Cách tốt nhất để mua {"\n"}sản phẩm bạn thích.
                 </h1>

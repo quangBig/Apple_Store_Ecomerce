@@ -1,61 +1,102 @@
-import React, { use, useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import LocalMallIcon from '@mui/icons-material/LocalMall';
-import MenuIcon from '@mui/icons-material/Menu';
-import CloseIcon from '@mui/icons-material/Close';
-import Brightness4Icon from '@mui/icons-material/Brightness4';
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import LocalMallIcon from "@mui/icons-material/LocalMall";
+import MenuIcon from "@mui/icons-material/Menu";
+import CloseIcon from "@mui/icons-material/Close";
 import { useAuthStore } from "../../stores/useAuthStore";
 import { usePageProductStore } from "../../stores/usePageProduct";
 import { useProductStore } from "../../stores/useProductStore";
 
-
-
 const Header = ({ logoColor = "#000" }) => {
-    const [openMenu, setOpenMenu] = useState(null);
     const [showUserMenu, setShowUserMenu] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-    const [mobileSubMenu, setMobileSubMenu] = useState(null);
+
     const { pageProducts, getPageProducts } = usePageProductStore();
-    const { getProducts, products, createProduct, loading, updateProduct, deleteProduct } = useProductStore();
+    const { getProducts, products } = useProductStore();
 
     useEffect(() => {
         getProducts();
-    }, [getProducts]);
-
-    // console.log(products, 'products in header');
-
-    useEffect(() => {
         getPageProducts();
-    }, [getPageProducts]);
+    }, [getProducts, getPageProducts]);
 
     const user = useAuthStore((state) => state.user);
     const logout = useAuthStore((state) => state.logout);
     const navigate = useNavigate();
 
+    // ---- Search logic ----
+    const [query, setQuery] = useState("");
+    const [suggestions, setSuggestions] = useState([]);
+    const [showSuggestions, setShowSuggestions] = useState(false);
+    const searchRef = useRef(null);
+    const debounceRef = useRef(null);
+
+    useEffect(() => {
+        const handleClickOutside = (e) => {
+            if (searchRef.current && !searchRef.current.contains(e.target)) {
+                setShowSuggestions(false);
+            }
+        };
+        window.addEventListener("click", handleClickOutside);
+        return () => window.removeEventListener("click", handleClickOutside);
+    }, []);
+
+    useEffect(() => {
+        if (debounceRef.current) clearTimeout(debounceRef.current);
+        if (!query.trim()) {
+            setSuggestions([]);
+            setShowSuggestions(false);
+            return;
+        }
+
+        debounceRef.current = setTimeout(() => {
+            const q = query.trim().toLowerCase();
+            const matched = (products || [])
+                .filter((p) => (p.name || "").toLowerCase().includes(q))
+                .slice(0, 7);
+            setSuggestions(matched);
+            setShowSuggestions(true);
+        }, 200);
+
+        return () => {
+            if (debounceRef.current) clearTimeout(debounceRef.current);
+        };
+    }, [query, products]);
+
+    const handleSelectProduct = (prod) => {
+        setQuery("");
+        setSuggestions([]);
+        setShowSuggestions(false);
+        navigate(`/product/${prod._id}`);
+        setMobileMenuOpen(false);
+    };
+
+    // ---- end search logic ----
+
     return (
-        <header className="w-full flex justify-between items-center px-4 sm:px-6 lg:px-10 py-4 lg:py-6 backdrop-blur-md backdrop-saturate-150 shadow-md z-50 relative">
+        <header className="w-full flex justify-between items-center px-6 lg:px-12 py-3 lg:py-4 bg-white/70 backdrop-blur-md shadow-sm z-50 fixed top-0 left-0">
             {/* Mobile menu button */}
             <button
-                className="lg:hidden p-2 -ml-2"
+                className="lg:hidden p-2"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                aria-label="Open menu"
             >
                 {mobileMenuOpen ? (
-                    <CloseIcon style={{ fontSize: 28, color: logoColor }} />
+                    <CloseIcon style={{ fontSize: 24, color: logoColor }} />
                 ) : (
-                    <MenuIcon style={{ fontSize: 28, color: logoColor }} />
+                    <MenuIcon style={{ fontSize: 24, color: logoColor }} />
                 )}
             </button>
 
             {/* Logo */}
-            <Link to="/" className="lg:ml-0 ml-4">
+            <Link to="/" className="flex items-center">
                 <svg
-                    width="32"
-                    height="32"
+                    width="28"
+                    height="28"
                     viewBox="0 0 32 32"
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"
-                    className="h-7 w-7 sm:h-8 sm:w-8"
+                    className="h-6 w-6"
                 >
                     <path
                         d="M25.7 17.6c-.1-3.2 2.6-4.7 2.7-4.8-1.5-2.2-3.8-2.5-4.6-2.6-2-0.2-3.9 1.2-4.9 1.2-1 0-2.5-1.2-4.1-1.1-2.1.1-4.1 1.2-5.2 3-2.2 3.7-.6 9.1 1.6 12.1 1.1 1.5 2.4 3.2 4.1 3.1 1.6-.1 2.2-1 4.1-1 1.9 0 2.4 1 4.1 1 1.7 0 2.8-1.5 3.8-3 1.2-1.7 1.7-3.4 1.7-3.5 0-.1-3.2-1.2-3.3-4.7zM21.6 7.2c.9-1.1 1.5-2.6 1.3-4.2-1.3.1-2.8.9-3.7 2-0.8.9-1.5 2.5-1.2 4 .1 0 2.1-.1 3.6-1.8z"
@@ -64,22 +105,22 @@ const Header = ({ logoColor = "#000" }) => {
                 </svg>
             </Link>
 
-            {/* Desktop Navigation */}
+            {/* Navigation */}
             <nav className="hidden lg:block">
-                <ul className="flex gap-6 xl:gap-8 font-bold text-sm xl:text-base text-gray-400 relative">
+                <ul className="flex gap-8 font-medium text-gray-500 text-sm tracking-wide">
                     <li>
-                        <Link to="/" className="hover:text-blue-500 transition">Home</Link>
+                        <Link to="/" className="hover:text-black transition">
+                            Home
+                        </Link>
                     </li>
-                    {[...pageProducts] // clone mảng để tránh mutate
-                        .sort((a, b) => a.name.localeCompare(b.name)) // sắp xếp theo tên A-Z
-                        .map((item, idx) => (
-                            <li
-                                key={item.name}
-                                className="relative"
-                                onMouseEnter={() => setOpenMenu(idx)}
-                                onMouseLeave={() => setOpenMenu(null)}
-                            >
-                                <Link to={item.slug} className="hover:text-blue-500 transition">
+                    {[...pageProducts]
+                        .sort((a, b) => a.name.localeCompare(b.name))
+                        .map((item) => (
+                            <li key={item.name}>
+                                <Link
+                                    to={item.slug}
+                                    className="hover:text-black transition"
+                                >
                                     {item.name}
                                 </Link>
                             </li>
@@ -87,76 +128,58 @@ const Header = ({ logoColor = "#000" }) => {
                 </ul>
             </nav>
 
+            {/* Search */}
+            <div className="flex-1 mx-6 max-w-sm relative" ref={searchRef}>
+                <input
+                    type="search"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    placeholder="Tìm sản phẩm..."
+                    className="w-full border border-gray-200 rounded-full pl-10 pr-4 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300 transition"
+                />
+                {/* search icon */}
+                <svg
+                    className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                >
+                    <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 13.65z"
+                    />
+                </svg>
 
-            {/* Mobile Navigation */}
-            {mobileMenuOpen && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden" onClick={() => setMobileMenuOpen(false)}>
-                    <div
-                        className="absolute top-0 left-0 h-full w-4/5 max-w-xs bg-white shadow-lg z-50 overflow-y-auto"
-                        onClick={(e) => e.stopPropagation()}
-                    >
-                        <div className="p-4 border-b border-gray-200 flex justify-between items-center">
-                            <Link to="/" onClick={() => setMobileMenuOpen(false)}>
-                                <svg
-                                    width="32"
-                                    height="32"
-                                    viewBox="0 0 32 32"
-                                    fill="none"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    className="h-8 w-8"
-                                >
-                                    <path
-                                        d="M25.7 17.6c-.1-3.2 2.6-4.7 2.7-4.8-1.5-2.2-3.8-2.5-4.6-2.6-2-0.2-3.9 1.2-4.9 1.2-1 0-2.5-1.2-4.1-1.1-2.1.1-4.1 1.2-5.2 3-2.2 3.7-.6 9.1 1.6 12.1 1.1 1.5 2.4 3.2 4.1 3.1 1.6-.1 2.2-1 4.1-1 1.9 0 2.4 1 4.1 1 1.7 0 2.8-1.5 3.8-3 1.2-1.7 1.7-3.4 1.7-3.5 0-.1-3.2-1.2-3.3-4.7zM21.6 7.2c.9-1.1 1.5-2.6 1.3-4.2-1.3.1-2.8.9-3.7 2-0.8.9-1.5 2.5-1.2 4 .1 0 2.1-.1 3.6-1.8z"
-                                        fill={logoColor}
-                                    />
-                                </svg>
-                            </Link>
-                            <button onClick={() => setMobileMenuOpen(false)}>
-                                <CloseIcon style={{ fontSize: 28, color: logoColor }} />
-                            </button>
-                        </div>
-                        {/* Desktop Navigation */}
-                        <nav className="hidden lg:block">
-                            <ul className="flex gap-6 xl:gap-8 font-bold text-sm xl:text-base text-gray-400 relative">
-                                <li>
-                                    <Link to="/" className="hover:text-blue-500 transition">Home</Link>
-                                </li>
-
-                                {/* Categories */}
-                                {[...new Set(products.map((p) => p.category))].map((cat, idx) => (
-                                    <li
-                                        key={cat}
-                                        className="relative"
-                                        onMouseEnter={() => setOpenMenu(idx)}
-                                        onMouseLeave={() => setOpenMenu(null)}
+                {showSuggestions && suggestions.length > 0 && (
+                    <div className="absolute left-0 right-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-50 overflow-hidden max-h-48">
+                        <ul className="divide-y divide-gray-100">
+                            {suggestions.map((s) => (
+                                <li key={s._id}>
+                                    <button
+                                        onClick={() => handleSelectProduct(s)}
+                                        className="w-full text-left px-3 py-2 hover:bg-gray-50 flex items-center gap-2"
                                     >
-                                        <button className="hover:text-blue-500 transition">{cat}</button>
-
-                                        {/* Dropdown: products by category */}
-                                        {openMenu === idx && (
-                                            <ul className="absolute left-0 mt-2 bg-white shadow-lg rounded-lg w-56 py-2 z-50">
-                                                {products
-                                                    .filter((p) => p.category === cat)
-                                                    .map((prod) => (
-                                                        <li key={prod._id}>
-                                                            <Link
-                                                                to={`/products/${prod._id}`}
-                                                                className="block px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-blue-500 transition"
-                                                            >
-                                                                {prod.name}
-                                                            </Link>
-                                                        </li>
-                                                    ))}
-                                            </ul>
-                                        )}
-                                    </li>
-                                ))}
-                            </ul>
-                        </nav>
-
+                                        <img
+                                            src={s.images?.[0] || "/placeholder-product.png"}
+                                            alt={s.name}
+                                            className="w-8 h-8 object-contain"
+                                        />
+                                        <div className="flex-1">
+                                            <div className="font-medium text-xs">{s.name}</div>
+                                            <div className="text-[10px] text-gray-500">
+                                                {s.category || ""}
+                                            </div>
+                                        </div>
+                                    </button>
+                                </li>
+                            ))}
+                        </ul>
                     </div>
-                </div>
-            )}
+                )}
+            </div>
 
             {/* User Actions */}
             <div className="flex gap-3 sm:gap-4 items-center text-gray-400">
@@ -220,6 +243,76 @@ const Header = ({ logoColor = "#000" }) => {
                     className="fixed inset-0 z-40"
                     onClick={() => setShowUserMenu(false)}
                 />
+            )}
+
+            {/* Mobile Navigation Drawer */}
+            {mobileMenuOpen && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden" onClick={() => setMobileMenuOpen(false)}>
+                    <div
+                        className="absolute top-0 left-0 h-full w-4/5 max-w-xs bg-white shadow-lg z-50 overflow-y-auto"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <div className="p-4 border-b border-gray-200 flex justify-between items-center">
+                            <Link to="/" onClick={() => setMobileMenuOpen(false)}>
+                                <svg
+                                    width="32"
+                                    height="32"
+                                    viewBox="0 0 32 32"
+                                    fill="none"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    className="h-8 w-8"
+                                >
+                                    <path
+                                        d="M25.7 17.6c-.1-3.2 2.6-4.7 2.7-4.8-1.5-2.2-3.8-2.5-4.6-2.6-2-0.2-3.9 1.2-4.9 1.2-1 0-2.5-1.2-4.1-1.1-2.1.1-4.1 1.2-5.2 3-2.2 3.7-.6 9.1 1.6 12.1 1.1 1.5 2.4 3.2 4.1 3.1 1.6-.1 2.2-1 4.1-1 1.9 0 2.4 1 4.1 1 1.7 0 2.8-1.5 3.8-3 1.2-1.7 1.7-3.4 1.7-3.5 0-.1-3.2-1.2-3.3-4.7zM21.6 7.2c.9-1.1 1.5-2.6 1.3-4.2-1.3.1-2.8.9-3.7 2-0.8.9-1.5 2.5-1.2 4 .1 0 2.1-.1 3.6-1.8z"
+                                        fill={logoColor}
+                                    />
+                                </svg>
+                            </Link>
+                            <button onClick={() => setMobileMenuOpen(false)}>
+                                <CloseIcon style={{ fontSize: 28, color: logoColor }} />
+                            </button>
+                        </div>
+
+                        <nav className="px-4 py-6">
+                            <ul className="flex flex-col gap-4">
+                                <li>
+                                    <Link to="/" onClick={() => setMobileMenuOpen(false)} className="block text-gray-700 font-semibold">Home</Link>
+                                </li>
+
+                                {/* Categories grouped by product.category */}
+                                {[...new Set((products || []).map((p) => p.category))].map((cat, idx) => (
+                                    <li key={cat}>
+                                        <button
+                                            onClick={() => setMobileSubMenu(mobileSubMenu === idx ? null : idx)}
+                                            className="w-full flex items-center justify-between text-left text-gray-700 font-semibold"
+                                        >
+                                            <span>{cat}</span>
+                                            <span>{mobileSubMenu === idx ? "-" : "+"}</span>
+                                        </button>
+
+                                        {mobileSubMenu === idx && (
+                                            <ul className="mt-2 pl-4">
+                                                {products
+                                                    .filter((p) => p.category === cat)
+                                                    .map((prod) => (
+                                                        <li key={prod._id}>
+                                                            <Link
+                                                                to={`/product/${prod._id}`}
+                                                                onClick={() => setMobileMenuOpen(false)}
+                                                                className="block py-2 text-gray-600"
+                                                            >
+                                                                {prod.name}
+                                                            </Link>
+                                                        </li>
+                                                    ))}
+                                            </ul>
+                                        )}
+                                    </li>
+                                ))}
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
             )}
         </header>
     );

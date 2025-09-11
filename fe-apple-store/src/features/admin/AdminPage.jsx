@@ -46,7 +46,7 @@ const AdminPage = () => {
     return (
         <div className="w-full min-h-screen bg-gray-50 flex flex-col text-black">
             <Header />
-            <div className="flex flex-1">
+            <div className="flex flex-1 mt-20">
                 {/* Sidebar */}
                 <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
 
