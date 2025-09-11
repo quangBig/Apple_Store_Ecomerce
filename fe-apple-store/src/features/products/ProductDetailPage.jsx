@@ -10,17 +10,21 @@ import OtherProducts from "../../components/sections/OtherProducts";
 import { useProductStore } from "../../stores/useProductStore";
 import { useAuthStore } from "../../stores/useAuthStore";
 import PromotionBox from "./components/offers";
+import { useCartStore } from "../../stores/useCartStore";
 
 const ProductDetailPage = () => {
     const { productId } = useParams();
     const { products } = useProductStore();
     const { user } = useAuthStore();
+    const { addToCart } = useCartStore();
     const navigate = useNavigate();
 
     const [selectedImage, setSelectedImage] = useState(0);
     const [selectedVariant, setSelectedVariant] = useState(0);
     const [selectedColor, setSelectedColor] = useState(0);
     const [quantity, setQuantity] = useState(1);
+
+
 
     useEffect(() => {
         AOS.init({
@@ -100,17 +104,35 @@ const ProductDetailPage = () => {
 
     const priceInfo = getPriceInfo();
 
-    const handleAddToCart = () => {
+
+
+    const handleAddToCart = async () => {
         if (!user) {
             toast.warning("Bạn cần đăng nhập trước khi thêm vào giỏ hàng!");
             navigate("/login");
             return;
         }
 
-        toast.success(
-            `Đã thêm ${quantity} x ${product.name} (${variant?.name || "—"}, ${color?.name || "—"}) vào giỏ hàng!`
-        );
+        try {
+            const res = await addToCart({
+                productId: product._id,
+                variantName: variant?.name || "",
+                color: color?.name || "",
+                quantity,
+                price: priceInfo.discounted || priceInfo.original,
+                originalPrice: priceInfo.original,
+                image: color?.image || product.images?.[0],
+            });
+
+
+            console.log("Cart updated:", res);
+        } catch (error) {
+            console.error("Add to cart error:", error);
+        }
     };
+
+
+
 
     const handleBuyNow = () => {
         if (!user) {
@@ -182,8 +204,8 @@ const ProductDetailPage = () => {
                                     key={index}
                                     onClick={() => setSelectedImage(index)}
                                     className={`w-20 h-20 rounded-lg overflow-hidden border-2 transition-all duration-300 hover:scale-110 ${selectedImage === index
-                                            ? "border-blue-500 shadow-lg"
-                                            : "border-gray-200 hover:border-gray-300"
+                                        ? "border-blue-500 shadow-lg"
+                                        : "border-gray-200 hover:border-gray-300"
                                         }`}
                                 >
                                     <img src={image} alt={`${product.name} ${index + 1}`} className="w-full h-full object-cover" />
@@ -242,8 +264,8 @@ const ProductDetailPage = () => {
                                                     setSelectedColor(0);
                                                 }}
                                                 className={`block border-2 rounded-lg p-3 min-w-[180px] text-left transition-all duration-300 ${selectedVariant === idx
-                                                        ? "border-red-500 bg-red-50"
-                                                        : "border-gray-200 hover:border-gray-300"
+                                                    ? "border-red-500 bg-red-50"
+                                                    : "border-gray-200 hover:border-gray-300"
                                                     }`}
                                             >
                                                 <div className="font-semibold mb-1">{v.name}</div>
@@ -292,8 +314,8 @@ const ProductDetailPage = () => {
                                                 key={c.value || idx}
                                                 onClick={() => setSelectedColor(idx)}
                                                 className={`flex flex-col items-center border-2 rounded-lg p-3 min-w-[120px] transition-all duration-300 ${selectedColor === idx
-                                                        ? "border-red-500 bg-red-50"
-                                                        : "border-gray-200 hover:border-gray-300"
+                                                    ? "border-red-500 bg-red-50"
+                                                    : "border-gray-200 hover:border-gray-300"
                                                     }`}
                                             >
                                                 <img src={c.image} alt={c.name} className="w-10 h-10 mb-2 rounded" />

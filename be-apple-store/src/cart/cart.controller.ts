@@ -15,13 +15,21 @@ export class CartController {
         return this.cartService.getCart(req.user.userId);
     }
 
-
     @UseGuards(JwtAuthGuard)
-    @Post('add')
-    async addToCart(@Request() req, @Body() body) {
-        console.log('req.user:', req.user); // <-- Debug
-        return this.cartService.addToCart(req.user.userId, body);
+    @Post("add")
+    async addToCart(
+        @Req() req,
+        @Body() dto: AddToCartDto,
+        @Body() body
+    ) {
+        console.log("req.user:", req.user);
+        console.log("dto:", dto);  // phải thấy object
+        console.log("body:", body);
+        return this.cartService.addToCart(req.user.userId, dto);
     }
+
+
+
 
     @UseGuards(JwtAuthGuard)
     @Patch("update/:productId")

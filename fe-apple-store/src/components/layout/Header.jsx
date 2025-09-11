@@ -7,6 +7,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import { useAuthStore } from "../../stores/useAuthStore";
 import { usePageProductStore } from "../../stores/usePageProduct";
 import { useProductStore } from "../../stores/useProductStore";
+import { toast } from "react-toastify";
 
 const Header = ({ logoColor = "#000" }) => {
     const [showUserMenu, setShowUserMenu] = useState(false);
@@ -14,6 +15,7 @@ const Header = ({ logoColor = "#000" }) => {
 
     const { pageProducts, getPageProducts } = usePageProductStore();
     const { getProducts, products } = useProductStore();
+
 
     useEffect(() => {
         getProducts();
@@ -71,8 +73,13 @@ const Header = ({ logoColor = "#000" }) => {
         setMobileMenuOpen(false);
     };
 
-    // ---- end search logic ----
-
+    // const handleCart = () => {
+    //     if (!user) {
+    //         toast.warning("Bạn cần đăng nhập trước khi thêm vào giỏ hàng!");
+    //         navigate("/login");
+    //         return;
+    //     }
+    // }
     return (
         <header className="w-full flex justify-between items-center px-6 lg:px-12 py-3 lg:py-4 bg-white/70 backdrop-blur-md shadow-sm z-50 fixed top-0 left-0">
             {/* Mobile menu button */}
@@ -183,9 +190,21 @@ const Header = ({ logoColor = "#000" }) => {
 
             {/* User Actions */}
             <div className="flex gap-3 sm:gap-4 items-center text-gray-400">
-                <Link to="/cart" className="p-1 sm:p-2">
+                <Link
+                    to="/cart"
+                    className="p-1 sm:p-2"
+                    onClick={(e) => {
+                        if (!user) {
+                            e.preventDefault(); // prevent navigate
+                            toast.warning("Bạn cần đăng nhập trước khi thêm vào giỏ hàng!");
+                            navigate("/login");
+                        }
+                    }}
+                >
                     <LocalMallIcon style={{ fontSize: 26 }} className="hover:text-blue-500 transition-colors" />
                 </Link>
+
+
                 <div className="relative p-1 sm:p-2">
                     <button
                         onClick={() => setShowUserMenu(!showUserMenu)}
