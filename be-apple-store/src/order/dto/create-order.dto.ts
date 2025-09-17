@@ -1,118 +1,40 @@
-import {
-    IsArray,
-    IsEmail,
-    IsEnum,
-    IsNotEmpty,
-    IsNumber,
-    IsOptional,
-    IsString,
-    ValidateNested,
-} from "class-validator";
-import { Type } from "class-transformer";
-
-class OrderItemDto {
-    @IsString()
-    @IsNotEmpty()
-    productId: string;
-
-    @IsOptional()
-    @IsString()
-    variantName?: string;
-
-    @IsOptional()
-    @IsString()
-    color?: string;
-
-    @IsNumber()
-    quantity: number;
-
-    @IsNumber()
-    price: number; // giá đã giảm
-
-    @IsOptional()
-    @IsNumber()
-    originalPrice?: number;
-
-    @IsOptional()
-    @IsString()
-    image?: string;
-}
-
-class ShippingAddressDto {
-    @IsString()
-    @IsNotEmpty()
-    firstName: string;
-
-    @IsString()
-    @IsNotEmpty()
-    lastName: string;
-
-    @IsEmail()
-    email: string;
-
-    @IsString()
-    @IsNotEmpty()
-    phone: string;
-
-    @IsString()
-    @IsNotEmpty()
-    address: string;
-
-    @IsOptional()
-    @IsNumber()
-    provinceCode?: number;
-
-    @IsOptional()
-    @IsString()
-    provinceName?: string;
-
-    @IsOptional()
-    @IsNumber()
-    districtCode?: number;
-
-    @IsOptional()
-    @IsString()
-    districtName?: string;
-
-    @IsOptional()
-    @IsNumber()
-    wardCode?: number;
-
-    @IsOptional()
-    @IsString()
-    wardName?: string;
-}
-
-class PaymentDto {
-    @IsEnum(["cod", "momo"])
-    method: "cod" | "momo";
-
-    @IsOptional()
-    @IsEnum(["pending", "paid", "failed"])
-    status?: "pending" | "paid" | "failed";
-}
+import { IsNotEmpty, IsString, IsNumber, IsOptional, IsArray } from "class-validator";
 
 export class CreateOrderDto {
+
+
     @IsArray()
-    @ValidateNested({ each: true })
-    @Type(() => OrderItemDto)
-    items: OrderItemDto[];
+    items: {
+        productId: string;
+        variantName?: string;
+        color?: string;
+        quantity: number;
+        price: number;
+        originalPrice: number;
+        image: string;
+    }[];
 
-    @ValidateNested()
-    @Type(() => ShippingAddressDto)
-    shippingAddress: ShippingAddressDto;
-
-    @ValidateNested()
-    @Type(() => PaymentDto)
-    payment: PaymentDto;
+    shippingAddress: {
+        firstName: string;
+        lastName: string;
+        email: string;
+        phoneNumber: string;
+        address: string;
+        provinceCode?: number;
+        provinceName?: string;
+        districtCode?: number;
+        districtName?: string;
+        wardCode?: number;
+        wardName?: string;
+    };
 
     @IsOptional()
     @IsString()
     note?: string;
 
-    @IsNumber()
-    subtotal: number;
-
-    @IsNumber()
-    total: number;
+    @IsOptional()
+    payment?: {
+        method: "cod" | "momo";
+        status: "pending" | "paid" | "failed";
+    };
 }

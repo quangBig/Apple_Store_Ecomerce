@@ -203,11 +203,19 @@ const CartPage = () => {
                                     Tiến hành thanh toán
                                 </button>
                                 <button
-                                    onClick={() => clearCart()}
+                                    onClick={async () => {
+                                        try {
+                                            await clearCart(); // xóa giỏ
+                                            toast.success("Xóa toàn bộ giỏ hàng thành công"); // thông báo sau khi xóa xong
+                                        } catch (err) {
+                                            toast.error("Xóa giỏ hàng thất bại");
+                                        }
+                                    }}
                                     className="w-full bg-gray-200 text-gray-700 py-3 px-6 rounded-lg hover:bg-gray-300 transition-colors duration-200 font-medium"
                                 >
                                     Xóa toàn bộ giỏ hàng
                                 </button>
+
                             </div>
                         </div>
                     </div>

@@ -112,10 +112,10 @@ export const useCartStore = create<CartState>()(
                 try {
                     const res = await axios.delete(`/cart/clear`);
                     set({ cart: res.data, loading: false });
-                    toast.success("Đã xóa toàn bộ giỏ hàng");
+
                 } catch (err: any) {
                     set({ loading: false });
-                    toast.error("Clear giỏ hàng thất bại: " + err.message);
+
                 }
             },
         }),

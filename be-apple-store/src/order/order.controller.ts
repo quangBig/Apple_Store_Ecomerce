@@ -3,48 +3,70 @@ import {
     Get,
     Post,
     Body,
-    Patch,
     Param,
+    Patch,
     Delete,
+    UseGuards,
+    Req,
 } from "@nestjs/common";
 import { OrderService } from "./order.service";
 import { CreateOrderDto } from "./dto/create-order.dto";
-import { UpdateOrderDto } from "./dto/update-oder.dto";
-
+import { JwtAuthGuard } from "src/auth/guards/jwt-auth.guard";
+import { AuthGuard } from "@nestjs/passport";
 
 @Controller("orders")
 export class OrderController {
     constructor(private readonly orderService: OrderService) { }
 
-    // ===== CREATE ORDER =====
+    // 🛒 Tạo đơn hàng
     @Post()
-    create(@Body() createOrderDto: CreateOrderDto) {
-        return this.orderService.create(createOrderDto);
+    @UseGuards(AuthGuard('jwt'))
+    async create(@Body() dto: CreateOrderDto, @Req() req) {
+        console.log("User trong req:", req.user); // test xem có gì
+        const userId = req.user?.userId || req.user?.userId;
+        return this.orderService.create(dto, userId);
     }
 
-    // ===== GET ALL ORDERS =====
+
+
+
+    // 📋 Lấy tất cả đơn hàng (admin)
     @Get()
-    findAll() {
+    async findAll() {
         return this.orderService.findAll();
     }
 
-    // ===== GET ONE ORDER =====
-    // order.controller.ts
+    // 👤 Lấy đơn theo user
     @Get("user/:userId")
-    findByUser(@Param("userId") userId: string) {
+    async findByUser(@Param("userId") userId: string) {
         return this.orderService.findByUser(userId);
     }
 
-
-    // ===== UPDATE ORDER (shippingAddress + note) =====
-    @Patch(":id")
-    update(@Param("id") id: string, @Body() updateOrderDto: UpdateOrderDto) {
-        return this.orderService.update(id, updateOrderDto);
+    // 🔍 Lấy chi tiết 1 đơn
+    @Get(":id")
+    async findOne(@Param("id") id: string) {
+        return this.orderService.findOne(id);
     }
 
-    // ===== DELETE ORDER =====
+    // 🚚 Update trạng thái đơn (pending → shipping → completed...)
+    @Patch(":id/status")
+    async updateStatus(@Param("id") id: string, @Body("status") status: string) {
+        return this.orderService.updateStatus(id, status);
+    }
+
+    // 💳 Update trạng thái thanh toán (paid/failed)
+    @Patch(":id/payment")
+    async updatePaymentStatus(
+        @Param("id") id: string,
+        @Body("status") status: "pending" | "paid" | "failed",
+        @Body("transactionId") transactionId?: string
+    ) {
+        return this.orderService.updatePaymentStatus(id, status, transactionId);
+    }
+
+    // ❌ Hủy đơn hàng
     @Delete(":id")
-    remove(@Param("id") id: string) {
-        return this.orderService.remove(id);
+    async cancel(@Param("id") id: string) {
+        return this.orderService.cancelOrder(id);
     }
 }
