@@ -9,8 +9,6 @@
   <img src="https://via.placeholder.com/300x200?text=React+Checkout+Page" width="300" style="margin: 10px;" />
 </p>
 
-# 🍏 Apple Store E-Commerce
-
 
 # 🍏 Apple Store E-Commerce
 
@@ -60,8 +58,7 @@ Admin có thể quản lý sản phẩm, người dùng và đơn hàng.
 ## 📦 Cài đặt & chạy dự án
 git clone https://github.com/quangBig/Apple_Store_Ecomerce.git
 cd Apple_Store_Ecomerce
-2. Backend (NestJS + MongoDB)
-bash
+## Backend (NestJS + MongoDB)
 cd be-apple-store
 npm install
 npm run start:dev
@@ -73,14 +70,13 @@ CLOUDINARY_NAME=your_cloud_name
 CLOUDINARY_API_KEY=your_api_key
 CLOUDINARY_API_SECRET=your_api_secret
 👉 API chạy ở http://localhost:3000
-
-3. Frontend (React + Vite)
+## Frontend (React + Vite)
 bash
 cd fe-apple-store
 npm install
 npm run dev
 👉 Website chạy ở http://localhost:5173
-📂 Cấu trúc dự án
+#Cấu trúc dự án
 Backend
 be-apple-store/
 ├─ src/
@@ -105,15 +101,15 @@ fe-apple-store/
 │  └─ App.jsx
 ├─ .env
 └─ package.json
-🎥 Giao diện demo (React UI)
+# Giao diện demo (React UI)
 Trang chủ
-Chi tiết sản phẩm
-Giỏ hàng & Thanh toán
-Admin Dashboard
+- Chi tiết sản phẩm
+- Giỏ hàng & Thanh toán
+- Admin Dashboard
 ⚡ Các bước sử dụng
-Chạy backend + frontend song song.
-Tạo tài khoản hoặc đăng nhập bằng tài khoản sẵn có.
-Chọn sản phẩm → Thêm vào giỏ hàng.
-Tiến hành đặt hàng (COD hoặc MoMo).
-Kiểm tra đơn hàng trong trang cá nhân.
-Admin đăng nhập để quản lý sản phẩm & đơn hàng.
+- Chạy backend + frontend song song.
+- Tạo tài khoản hoặc đăng nhập bằng tài khoản sẵn có.
+- Chọn sản phẩm → Thêm vào giỏ hàng.
+- Tiến hành đặt hàng (COD hoặc MoMo).
+- Kiểm tra đơn hàng trong trang cá nhân.
+- Admin đăng nhập để quản lý sản phẩm & đơn hàng.
