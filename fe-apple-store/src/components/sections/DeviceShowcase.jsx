@@ -47,7 +47,7 @@ const DeviceShowcase = ({ products = [], title = "", desc = "" }) => {
         >
             <Header logoColor={getLogoColor()} />
 
-            <div className="flex-1 flex flex-col items-center justify-center mt-24 relative w-full px-4 sm:px-6 lg:px-8">
+            <div className="flex-1 flex flex-col items-center justify-center mt-48 relative w-full px-4 sm:px-6 lg:px-8 ">
                 <div className="relative flex flex-col items-center justify-center w-full">
                     <h1
                         data-aos="fade-up"
