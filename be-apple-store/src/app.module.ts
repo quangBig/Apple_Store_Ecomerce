@@ -11,6 +11,7 @@ import { PageProductsModule } from './page-prodcuts/page-products.module';
 import { UploadModule } from './upload/upload.module';
 import { CloudinaryModule } from './products/cloudinary/cloudinary.module';
 import { CartModule } from './cart/cart.module';
+import { OrderModule } from './order/oder.module';
 
 @Module({
   imports: [
@@ -28,7 +29,8 @@ import { CartModule } from './cart/cart.module';
     PageProductsModule,
     CloudinaryModule,
     UploadModule, // Ensure ProductsModule is imported here
-    CartModule
+    CartModule,
+    OrderModule
   ],
   controllers: [AppController],
   providers: [AppService],
