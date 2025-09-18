@@ -23,6 +23,7 @@ interface AuthState {
     logout: () => void;
     checkAuth: () => Promise<void>;
     loginWithGoogle: (token: string) => Promise<void>;
+    getUserCount: () => Promise<number>;
 }
 
 interface RegisterData {
@@ -129,6 +130,15 @@ export const useAuthStore = create<AuthState, [['zustand/persist', AuthState]]>(
                     throw error;
                 }
             },
+            getUserCount: async () => {
+                try {
+                    const res = await axios.get("/auth/count");
+                    return res.data.total;
+                } catch (err) {
+                    console.error("Failed to fetch user count:", err);
+                    return 0;
+                }
+            }
         }),
         {
             name: "auth-store",

@@ -44,9 +44,17 @@ export interface Order {
     updatedAt?: string;
 }
 
+interface OrderStatistics {
+    statusCounts: { _id: string; count: number }[];
+    revenue: number;
+    totalOrders: number;
+    totalAmount: number;
+}
+
 interface OrderState {
     orders: Order[];
     loading: boolean;
+    statistics: OrderStatistics | null;
     createOrder: (data: Partial<Order>) => Promise<void>;
     getOrders: () => Promise<void>;
     getOrdersByUser: (userId: string) => Promise<void>;
@@ -58,11 +66,15 @@ interface OrderState {
         transactionId?: string
     ) => Promise<void>;
     cancelOrder: (id: string) => Promise<void>;
+    removeOrder: (id: string) => Promise<void>;
+    getStatistics: () => Promise<void>;
 }
+
 
 export const useOrderStore = create<OrderState>((set, get) => ({
     orders: [],
     loading: false,
+    statistics: null,
 
     // ===== CREATE ORDER =====
     createOrder: async (data) => {
@@ -152,12 +164,13 @@ export const useOrderStore = create<OrderState>((set, get) => ({
     },
 
     // ===== CANCEL ORDER =====
+    // ===== CANCEL ORDER =====
     cancelOrder: async (id) => {
         set({ loading: true });
         try {
-            await axios.delete(`/orders/${id}`);
+            const res = await axios.patch(`/orders/${id}/cancel`);
             set({
-                orders: get().orders.filter((o) => o._id !== id),
+                orders: get().orders.map((o) => (o._id === id ? res.data : o)),
                 loading: false,
             });
             toast.success("Đơn hàng đã được hủy");
@@ -166,4 +179,30 @@ export const useOrderStore = create<OrderState>((set, get) => ({
             toast.error("Hủy đơn hàng thất bại: " + err.message);
         }
     },
+    // ===== DELETE ORDER (hard delete) =====
+    removeOrder: async (id: string) => {
+        set({ loading: true });
+        try {
+            await axios.delete(`/orders/${id}`);
+            set({
+                orders: get().orders.filter((o) => o._id !== id),
+                loading: false,
+            });
+            toast.success("Xóa đơn hàng thành công");
+        } catch (err: any) {
+            set({ loading: false });
+            toast.error("Xóa đơn hàng thất bại: " + err.message);
+        }
+    },
+    getStatistics: async () => {
+        set({ loading: true });
+        try {
+            const res = await axios.get("/orders/statistics");
+            set({ statistics: res.data, loading: false });
+        } catch (err: any) {
+            set({ loading: false });
+            toast.error("Lấy thống kê đơn hàng thất bại: " + err.message);
+        }
+    },
+
 }));

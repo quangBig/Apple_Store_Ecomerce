@@ -55,4 +55,10 @@ export class AuthController {
     getAdminData() {
         return 'Chỉ admin mới thấy được!';
     }
+
+    @Get('count')
+    async countUsers() {
+        const total = await this.authService.countUsers();
+        return { total };
+    }
 }

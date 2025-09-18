@@ -185,6 +185,9 @@ export class AuthService {
             throw new UnauthorizedException('Google authentication failed');
         }
     }
+    async countUsers(): Promise<number> {
+        return this.userModel.countDocuments().exec();
+    }
 
     generateJwt(user: any) {
         const payload = { sub: user._id, email: user.email, role: user.role };
@@ -193,4 +196,5 @@ export class AuthService {
             user,
         };
     }
+
 }

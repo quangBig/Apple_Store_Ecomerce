@@ -8,11 +8,12 @@ import { useAuthStore } from "../../stores/useAuthStore";
 import { usePageProductStore } from "../../stores/usePageProduct";
 import { useProductStore } from "../../stores/useProductStore";
 import { toast } from "react-toastify";
+import { useCartStore } from "../../stores/useCartStore";
 
 const Header = ({ logoColor = "#000" }) => {
     const [showUserMenu, setShowUserMenu] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
+    const { cart } = useCartStore();
     const { pageProducts, getPageProducts } = usePageProductStore();
     const { getProducts, products } = useProductStore();
 
@@ -64,6 +65,7 @@ const Header = ({ logoColor = "#000" }) => {
             if (debounceRef.current) clearTimeout(debounceRef.current);
         };
     }, [query, products]);
+    const totalItems = cart?.items?.reduce((sum, item) => sum + item.quantity, 0) || 0;
 
     const handleSelectProduct = (prod) => {
         setQuery("");
@@ -192,18 +194,24 @@ const Header = ({ logoColor = "#000" }) => {
             <div className="flex gap-3 sm:gap-4 items-center text-gray-400">
                 <Link
                     to="/cart"
-                    className="p-1 sm:p-2"
+                    className="relative p-1 sm:p-2"
                     onClick={(e) => {
                         if (!user) {
-                            e.preventDefault(); // prevent navigate
+                            e.preventDefault();
                             toast.warning("Bạn cần đăng nhập trước khi thêm vào giỏ hàng!");
                             navigate("/login");
                         }
                     }}
                 >
                     <LocalMallIcon style={{ fontSize: 26 }} className="hover:text-blue-500 transition-colors" />
-                </Link>
 
+                    {/* Badge hiển thị số lượng */}
+                    {totalItems > 0 && (
+                        <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full">
+                            {totalItems}
+                        </span>
+                    )}
+                </Link>
 
                 <div className="relative p-1 sm:p-2">
                     <button

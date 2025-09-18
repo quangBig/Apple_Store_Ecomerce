@@ -6,6 +6,7 @@ import Sidebar from "./components/Sidebar";
 import Dashboard from "./components/Dashboard";
 import ProductManagement from "./components/ProductManagement";
 import PageManagement from "./components/PageManagement";
+import OrderManagement from "./components/OrderManagenement";
 
 const AdminPage = () => {
     const [activeTab, setActiveTab] = useState("dashboard");
@@ -30,6 +31,9 @@ const AdminPage = () => {
 
             case "pages":
                 return <PageManagement />;
+
+            case "orders":
+                return <OrderManagement />;
 
             default:
                 return (

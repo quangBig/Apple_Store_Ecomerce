@@ -25,8 +25,24 @@ export default function OrderPage() {
     console.log("order", orders)
     console.log("order", user)
     // Lọc đơn theo tab
-    const filteredOrders =
-        tab === "all" ? orders : orders.filter((o) => o.status === tab);
+    // const filteredOrders =
+    //     tab === "all" ? orders : orders.filter((o) => o.status === tab);
+
+    const filteredOrders = orders.filter(order => {
+        if (tab === "all") return true;
+
+        if (tab === "pending") {
+            // Chỉ hiện đơn COD chưa thanh toán
+            return (
+                order.payment?.method === "cod" &&
+                order.payment?.status === "pending"
+            );
+        }
+
+        return order.status === tab;
+    });
+
+
 
     return (
         <>

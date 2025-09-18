@@ -12,6 +12,7 @@ import { UploadModule } from './upload/upload.module';
 import { CloudinaryModule } from './products/cloudinary/cloudinary.module';
 import { CartModule } from './cart/cart.module';
 import { OrderModule } from './order/oder.module';
+import { ChatModule } from './chat/chat.module';
 
 @Module({
   imports: [
@@ -30,7 +31,8 @@ import { OrderModule } from './order/oder.module';
     CloudinaryModule,
     UploadModule, // Ensure ProductsModule is imported here
     CartModule,
-    OrderModule
+    OrderModule,
+    ChatModule
   ],
   controllers: [AppController],
   providers: [AppService],

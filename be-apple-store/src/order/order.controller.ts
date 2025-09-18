@@ -42,6 +42,11 @@ export class OrderController {
         return this.orderService.findByUser(userId);
     }
 
+    @Get("statistics")
+    async getStatistics() {
+        return this.orderService.getStatistics();
+    }
+
     // 🔍 Lấy chi tiết 1 đơn
     @Get(":id")
     async findOne(@Param("id") id: string) {
@@ -64,9 +69,17 @@ export class OrderController {
         return this.orderService.updatePaymentStatus(id, status, transactionId);
     }
 
-    // ❌ Hủy đơn hàng
-    @Delete(":id")
-    async cancel(@Param("id") id: string) {
+    // ❌ Hủy đơn hàng (soft delete)
+    @Patch(":id/cancel")
+    async cancelOrder(@Param("id") id: string) {
         return this.orderService.cancelOrder(id);
     }
+
+    // 🗑️ Xóa hẳn đơn hàng (hard delete)
+    @Delete(":id")
+    async remove(@Param("id") id: string) {
+        return this.orderService.remove(id);
+    }
+
+
 }

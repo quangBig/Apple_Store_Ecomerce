@@ -1,6 +1,30 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useProductStore } from "../../../stores/useProductStore";
+import { useAuthStore } from "../../../stores/useAuthStore";
+import { useOrderStore } from "../../../stores/useOrderStore";
 
 const Dashboard = () => {
+    const { products, getProducts } = useProductStore();
+    const [count, setCount] = useState(0);
+    const { user, getUserCount } = useAuthStore();
+    const { statistics, getStatistics } = useOrderStore()
+    useEffect(() => {
+        getStatistics();
+    }, [getStatistics]);
+    console.log(statistics, "statistics")
+
+    useEffect(() => {
+        getProducts();
+    }, [getProducts]);
+    useEffect(() => {
+        (async () => {
+            const total = await getUserCount();
+            setCount(total);
+        })();
+    }, [getUserCount]);
+    console.log(count, "dfg")
+
+    console.log(products, "dfg")
     return (
         <div className="space-y-6" data-aos="fade-up" data-aos-delay="300">
             <h2 className="text-2xl font-bold text-gray-800">Dashboard</h2>
@@ -18,7 +42,7 @@ const Dashboard = () => {
                         </div>
                         <div className="ml-4">
                             <p className="text-sm font-medium text-gray-600">Tổng sản phẩm</p>
-                            <p className="text-2xl font-bold text-gray-900">1,234</p>
+                            <p className="text-2xl font-bold text-gray-900">{products.length}</p>
                         </div>
                     </div>
                 </div>
@@ -34,7 +58,9 @@ const Dashboard = () => {
                         </div>
                         <div className="ml-4">
                             <p className="text-sm font-medium text-gray-600">Doanh thu</p>
-                            <p className="text-2xl font-bold text-gray-900">2.5B ₫</p>
+                            <p className="text-2xl font-bold text-gray-900">
+                                {statistics?.revenue?.toLocaleString("vi-VN")} ₫
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -50,10 +76,13 @@ const Dashboard = () => {
                         </div>
                         <div className="ml-4">
                             <p className="text-sm font-medium text-gray-600">Đơn hàng</p>
-                            <p className="text-2xl font-bold text-gray-900">567</p>
+                            <p className="text-2xl font-bold text-gray-900">
+                                {statistics?.totalOrders}
+                            </p>
                         </div>
                     </div>
                 </div>
+
 
                 <div
                     className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1"
@@ -66,7 +95,7 @@ const Dashboard = () => {
                         </div>
                         <div className="ml-4">
                             <p className="text-sm font-medium text-gray-600">Người dùng</p>
-                            <p className="text-2xl font-bold text-gray-900">8,901</p>
+                            <p className="text-2xl font-bold text-gray-900">{count}</p>
                         </div>
                     </div>
                 </div>

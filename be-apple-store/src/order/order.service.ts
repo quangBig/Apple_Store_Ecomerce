@@ -95,12 +95,63 @@ export class OrderService {
         return order.save();
     }
 
-    // ❌ Hủy đơn hàng
+    // ❌ Hủy đơn hàng (soft delete)
     async cancelOrder(id: string): Promise<Order> {
         const order = await this.orderModel.findById(id);
         if (!order) throw new NotFoundException("Order not found");
 
+        if (order.status === "cancelled") {
+            return order; // đã hủy rồi thì trả về luôn
+        }
+
         order.status = "cancelled";
         return order.save();
     }
+
+    // 🗑️ Xóa hẳn đơn hàng (hard delete - chỉ nên cho admin)
+    async remove(id: string): Promise<Order> {
+        const order = await this.orderModel.findByIdAndDelete(id);
+        if (!order) throw new NotFoundException("Order not found");
+        return order;
+    }
+
+    // 📊 Thống kê đơn hàng
+    async getStatistics() {
+
+
+        const stats = await this.orderModel.aggregate([
+            {
+                $facet: {
+                    // Đếm số đơn theo trạng thái
+                    statusCounts: [
+                        { $group: { _id: "$status", count: { $sum: 1 } } }
+                    ],
+
+                    // Tổng doanh thu (chỉ tính đơn completed)
+                    revenue: [
+                        { $match: { status: "completed" } },
+                        { $group: { _id: null, total: { $sum: "$total" } } }
+                    ],
+
+                    // Tổng số đơn
+                    totalOrders: [
+                        { $count: "count" }
+                    ],
+
+                    // Tổng tiền tất cả đơn (không phân biệt trạng thái)
+                    totalAmount: [
+                        { $group: { _id: null, total: { $sum: "$total" } } }
+                    ]
+                }
+            }
+        ]);
+
+        return {
+            statusCounts: stats[0].statusCounts,
+            revenue: stats[0].revenue[0]?.total || 0,
+            totalOrders: stats[0].totalOrders[0]?.count || 0,
+            totalAmount: stats[0].totalAmount[0]?.total || 0,
+        };
+    }
+
 }
