@@ -1,11 +1,15 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { Document } from "mongoose";
+import mongoose, { Document } from "mongoose";
 
-export type ChatDocument = Chat & Document;
 
+
+export type ChatDocument = Chat & Document & {
+    createdAt: Date;
+    updatedAt: Date;
+};
 @Schema({ timestamps: true })
 export class Chat {
-    @Prop({ required: true })
+    @Prop({ type: mongoose.Schema.Types.ObjectId, ref: "User", required: true })
     userId: string;
 
     @Prop({ required: true })
@@ -14,10 +18,10 @@ export class Chat {
     @Prop({ required: true })
     reply: string;
 
-    @Prop({ default: "neutral" }) // good | bad | neutral
+    @Prop({ default: "neutral" })
     sentiment: string;
 
-    @Prop({ default: "other" }) // product_info | stock | combo | policy | shipping_payment | promotion | other
+    @Prop({ default: "other" })
     intent: string;
 }
 

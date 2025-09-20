@@ -1,9 +1,12 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { Chat, ChatDocument } from "./schemas/chat.schemas";
+
 import { Product, ProductDocument } from "src/products/schemas/products.schema";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { Chat, ChatDocument } from "./schemas/chat.schemas";
+import { ChatResponseDto } from "./dto/chat-reponsive.dto";
+
 
 const detectIntentPrompt = `
 Bạn là một bộ phân loại intent cho chatbot bán hàng.
@@ -37,22 +40,33 @@ export class ChatService {
         @InjectModel(Product.name) private productModel: Model<ProductDocument>,
     ) {
         this.genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
-
     }
 
     private async runGemini(prompt: string, message: string): Promise<string> {
-        const model = this.genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-        const result = await model.generateContent(`${prompt}\n\nCâu hỏi: ${message}`);
-        return result.response.text().trim();
+        try {
+            const model = this.genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+            const result = await model.generateContent(`${prompt}\n\nCâu hỏi: ${message}`);
+            return result.response.text().trim();
+        } catch (err: any) {
+            console.error("Gemini API error:", err.message || err);
+
+            // fallback khi quota hoặc API lỗi
+            return "fallback";
+        }
     }
 
     private async detectIntent(message: string): Promise<string> {
-        return this.runGemini(detectIntentPrompt, message);
+        const intent = await this.runGemini(detectIntentPrompt, message);
+        const valid = ["product_info", "stock", "combo", "policy", "shipping_payment", "promotion", "other"];
+        return valid.includes(intent) ? intent : "other";
     }
 
     private async analyzeSentiment(message: string): Promise<string> {
-        return this.runGemini(sentimentPrompt, message);
+        const sentiment = await this.runGemini(sentimentPrompt, message);
+        const valid = ["good", "bad", "neutral"];
+        return valid.includes(sentiment) ? sentiment : "neutral";
     }
+
 
     private async generateReply(intent: string, message: string): Promise<string> {
         if (intent === "other") {
@@ -78,7 +92,8 @@ Nhiệm vụ:
 - Câu hỏi của khách: "${message}"
 `;
 
-            const model = this.genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+            const model = this.genAI.getGenerativeModel({ model: "gemini-2.0" });
             const result = await model.generateContent(contextPrompt);
             return result?.response?.text()?.trim() || "Xin lỗi, hiện tại tôi không thể trả lời câu hỏi này.";
         } catch (err) {
@@ -86,34 +101,72 @@ Nhiệm vụ:
             return "Xin lỗi, hiện tại hệ thống chatbot đang gặp sự cố.";
         }
     }
-
-
-    async processMessage(userId: string, message: string) {
+    async getAllChats() {
         try {
-            const intent = await this.detectIntent(message);
-            const sentiment = await this.analyzeSentiment(message);
+            // Lấy tất cả chat, bao gồm cả user và guest
+            const chats = await this.chatModel.find().sort({ createdAt: -1 }).lean();
+            return chats.map(chat => ({
+                userId: chat.userId || "guest",
+                message: chat.message,
+                reply: chat.reply,
+                sentiment: chat.sentiment,
+                intent: chat.intent,
+                createdAt: chat.createdAt,
+            }));
+        } catch (err) {
+            console.error("Error fetching all chats:", err);
+            return [];
+        }
+    }
+
+
+    async processMessage(userId: string | null, message: string): Promise<ChatResponseDto> {
+        try {
+            const [intent, sentiment] = await Promise.all([
+                this.detectIntent(message),
+                this.analyzeSentiment(message),
+            ]);
+
             const reply = await this.generateReply(intent, message);
 
-            const chat = await this.chatModel.create({
-                userId,
-                message
-            });
+            // Lưu DB nếu có userId
+            if (userId) {
+                const chat = await this.chatModel.create({
+                    userId,
+                    message,
+                    reply,
+                    sentiment,
+                    intent,
+                });
+
+                return {
+                    userId,
+                    message,
+                    reply,
+                    sentiment,
+                    intent,
+                    createdAt: chat.createdAt,
+                };
+            }
+
 
             return {
-                userId,
+                userId: "guest",
                 message,
                 reply,
                 sentiment,
-                intent
+                intent,
+                createdAt: new Date(),
             };
         } catch (err) {
             console.error("Error processing message:", err);
             return {
-                userId,
+                userId: userId || "guest",
                 message,
-                reply: "Xin lỗi, hiện tại hệ thống đang gặp sự cố.",
+                reply: "Xin lỗi, hệ thống đang quá tải hoặc hết quota Gemini.",
                 sentiment: "neutral",
-                intent: "other"
+                intent: "other",
+                createdAt: new Date(),
             };
         }
     }

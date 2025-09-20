@@ -1,53 +1,55 @@
-// src/store/chatStore.ts
+// src/stores/useChatStore.ts
 import { create } from "zustand";
-import { io, Socket } from "socket.io-client";
 import axios from "../lib/axios";
 
-export interface ChatMessage {
-    userId: string;
+interface Message {
+    sender: "user" | "bot";
     message: string;
-    reply: string;
-    sentiment: string;
-    intent: string;
-    createdAt: string;
 }
 
 interface ChatState {
-    messages: ChatMessage[];
-    socket: Socket | null;
-    connectSocket: (userId: string) => void;
-    sendMessage: (userId: string, message: string) => void;
-    loadStats: () => Promise<{ sentiment: any; intent: any }>;
+    messages: Message[];
+    sendMessage: (msg: string, token?: string) => Promise<void>;
 }
 
 export const useChatStore = create<ChatState>((set, get) => ({
     messages: [],
-    socket: null,
 
-    connectSocket: (userId: string) => {
-        const socket = io("http://localhost:5000", { transports: ["websocket"] });
+    sendMessage: async (msg, token) => {
+        if (!msg.trim()) return;
 
-        socket.on("connect", () => {
-            console.log("✅ Socket connected:", socket.id);
-        });
+        // đẩy msg user lên UI trước
+        set((state) => ({
+            messages: [...state.messages, { sender: "user", message: msg }],
+        }));
 
-        socket.on("receiveMessage", (msg: ChatMessage) => {
-            set((state) => ({ messages: [...state.messages, msg] }));
-        });
+        try {
+            const url = token
+                ? "http://localhost:5000/chat" // login => lưu DB
+                : "http://localhost:5000/chat/guest"; // guest => không lưu DB
 
-        set({ socket });
-    },
+            const res = await axios.post(
+                url,
+                { message: msg },
+                token
+                    ? { headers: { Authorization: `Bearer ${token}` } }
+                    : undefined
+            );
 
-    sendMessage: (userId, message) => {
-        const socket = get().socket;
-        if (socket) {
-            socket.emit("sendMessage", { userId, message });
+            // bot trả lời
+            set((state) => ({
+                messages: [
+                    ...state.messages,
+                    { sender: "bot", message: res.data.reply },
+                ],
+            }));
+        } catch (err) {
+            set((state) => ({
+                messages: [
+                    ...state.messages,
+                    { sender: "bot", message: "❌ Lỗi kết nối server" },
+                ],
+            }));
         }
-    },
-
-    loadStats: async () => {
-        const sentimentRes = await axios.get("/chat/stats/sentiment");
-        const intentRes = await axios.get("/chat/stats/intent");
-        return { sentiment: sentimentRes.data, intent: intentRes.data };
     },
 }));
